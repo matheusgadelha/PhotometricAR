@@ -46,5 +46,13 @@ namespace Helper
 
   	return outImg;
   }
+  
+  void drawPoints	(	cv::Mat& img, std::vector<cv::Point2f> points )
+  {
+  	for (unsigned int i = 0; i < points.size(); ++i)
+  	{
+  		cv::circle( img, points[i], 3, cv::Scalar( 255, 0, 0 ), 3 );
+  	}
+  }
 
 }

@@ -2,6 +2,9 @@
 #define HELPER_HPP
 
 #include "opencv2/opencv.hpp"
+#include <vector>
+
+#define DEBUG_MODE
 
 namespace Helper
 {
@@ -17,6 +20,8 @@ namespace Helper
 			std::vector<cv::DMatch> matches,
 			unsigned maxMatchesDrawn
 		);
+		
+	void drawPoints	(	cv::Mat&, std::vector<cv::Point2f> );
 
 }
 

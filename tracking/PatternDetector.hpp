@@ -26,6 +26,7 @@ namespace tracking
 				
 			bool train();
 			bool processFrame( const cv::Mat& );
+			bool flowTracking( const cv::Mat&,	cv::Mat& );
 			void enableRatioTest();
 			void disableRatioTest();
 			void enableHomographyMatching();
@@ -33,9 +34,14 @@ namespace tracking
 			void setHomographyReprojThreshold( float );
 			
 			
+			//FOR DEBUG PURPOSES
+//			cv::Mat camImg;
+			
+			
 		private:
 			
 			Pattern pattern;
+			cv::Mat warpedPattern;
 		
 			cv::Ptr<cv::FeatureDetector> 			featureDetector;
 			cv::Ptr<cv::DescriptorExtractor> 	descriptorExtractor;
@@ -45,7 +51,11 @@ namespace tracking
 			std::vector< std::vector<cv::DMatch> > 	multiMatches;
 			
 			cv::Mat 									frameDescriptors;
+			cv::Mat										frameGray;
 			std::vector<cv::KeyPoint> frameKeypoints;
+			
+			std::vector<cv::Point2f>  rawFrameKeyPoints;
+			std::vector<cv::Point2f>  rawPatternKeyPoints;
 			
 			cv::Mat homography;
 			
@@ -57,6 +67,8 @@ namespace tracking
 			bool homographyMatching();
 			
 			float homographyReprojThreshold;
+			
+			bool patternFound;
 	
 	};
 

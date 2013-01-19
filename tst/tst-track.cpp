@@ -18,7 +18,7 @@ int main( int argc, char** argv )
 		cv::VideoCapture capture(0);
 	
 		cv::Mat pattern_image = cv::imread(argv[1]);
-		cv::Mat currentFrame;
+		cv::Mat currentFrame, previousFrame;
 		
 		tracking::Tracker aTracker( pattern_image );
 		tracking::PatternDetector patternDetector( pattern_image );		
@@ -34,9 +34,18 @@ int main( int argc, char** argv )
 				std::cout << "ERROR: Cannot open camera device...\n";
 				return -1;
 			}
-			cv::imshow( "Video", currentFrame );
+			
 			if ( (cvWaitKey(10) & 255) == 27 ) break;
-			patternDetector.processFrame( currentFrame );
+			if( previousFrame.empty() )
+			{
+				patternDetector.processFrame( currentFrame );
+			}
+			else
+			{
+				patternDetector.flowTracking( previousFrame, currentFrame );
+			}
+			cv::imshow( "Video", currentFrame );
+			previousFrame = currentFrame.clone();
 		}
 		
 	}
