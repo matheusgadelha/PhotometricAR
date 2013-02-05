@@ -19,13 +19,13 @@ namespace tracking
 			PatternDetector
 				( 
 					cv::Mat& 													_pattern_img,
-					cv::Ptr<cv::FeatureDetector> 			_feature_detector 		= new cv::ORB( 1000 ),
-					cv::Ptr<cv::DescriptorExtractor> 	_descriptor_extractor	= new cv::FREAK( true, true ),
+					cv::Ptr<cv::FeatureDetector> 			_feature_detector 		= new cv::ORB( 500 ),
+					cv::Ptr<cv::DescriptorExtractor> 	_descriptor_extractor	= new cv::ORB(),
 					cv::Ptr<cv::DescriptorMatcher> 		_descriptor_matcher		= new cv::BFMatcher( cv::NORM_HAMMING, true )
 				);
 				
 			bool train();
-			bool processFrame( const cv::Mat& );
+			bool processFrame( cv::Mat& );
 			bool flowTracking( const cv::Mat&,	cv::Mat& );
 			void enableRatioTest();
 			void disableRatioTest();
@@ -62,13 +62,67 @@ namespace tracking
 			bool ratioTestFlag;
 			bool homographyMatchingFlag;
 			
-			bool computeFeaturesOnFrame( const cv::Mat& );
-			bool generateMatches(const cv::Mat& );
-			bool homographyMatching();
-			
 			float homographyReprojThreshold;
 			
 			bool patternFound;
+			
+			float homographyAcceptanceThreshold;
+			
+			bool computeFeaturesOnFrame
+				(
+					const cv::Mat&,
+					std::vector<cv::KeyPoint>&,
+					cv::Mat&
+				);
+			
+			bool generateMatches
+				(
+					const cv::Mat&,
+					std::vector<cv::KeyPoint>&,
+					cv::Mat&,
+					std::vector<cv::DMatch>&
+				);
+			
+			bool homographyMatching
+				(
+					std::vector<cv::DMatch>&,
+					cv::Mat&, std::vector<cv::KeyPoint>&,
+					std::vector<cv::KeyPoint>&,
+					float
+				);
+			
+			void extractFeatures( const cv::Mat&, std::vector<cv::KeyPoint>&, cv::Mat& );
+			
+			void performMatching( const cv::Mat&, std::vector<cv::DMatch>& );
+			
+			void removeNonMatchedKeyPoints
+			 	(
+			 		std::vector<cv::DMatch>&,
+			 		std::vector<cv::KeyPoint>&,
+			 		std::vector<cv::KeyPoint>&
+			 	);
+			 
+			void removeNonMatchedPoints
+				(
+				 	std::vector<cv::DMatch>& _matches,
+				 	std::vector<cv::Point2f>& _train_points,
+				 	std::vector<cv::Point2f>& _query_points
+				);
+			
+			void homographyRefinement
+				(
+					std::vector<cv::KeyPoint>&,
+					std::vector<cv::KeyPoint>&,
+					cv::Mat&
+				);
+			
+			float calcHomographyError
+				(
+					cv::Mat& 										_homography,
+					std::vector<cv::KeyPoint>&	_train_key_points,
+					std::vector<cv::KeyPoint>& 	_query_key_points,
+					std::vector<cv::DMatch>& 		_matches
+				);
 	
 	};
 

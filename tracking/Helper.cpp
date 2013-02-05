@@ -17,8 +17,8 @@ namespace Helper
 		(
 			cv::Mat query,
 			cv::Mat pattern,
-			const std::vector<cv::KeyPoint>& queryKp,
-			const std::vector<cv::KeyPoint>& trainKp,
+			const std::vector<cv::KeyPoint> queryKp,
+			const std::vector<cv::KeyPoint> trainKp,
 			std::vector<cv::DMatch> matches,
 			unsigned maxMatchesDrawn
 		)
