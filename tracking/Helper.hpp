@@ -21,7 +21,10 @@ namespace Helper
 			unsigned maxMatchesDrawn
 		);
 		
-	void drawPoints	(	cv::Mat&, std::vector<cv::Point2f> );
+	void drawPoints	( cv::Mat&, std::vector<cv::Point2f> );
+
+	void drawPattern( cv::Mat&, cv::Mat&, std::vector<cv::Point2f> );
+
 
 }
 

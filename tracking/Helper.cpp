@@ -55,4 +55,15 @@ namespace Helper
   	}
   }
 
+  void drawPattern( cv::Mat& img, cv::Mat& h, std::vector<cv::Point2f> corners )
+  {
+    std::vector<cv::Point2f> img_corners;
+    cv::perspectiveTransform( corners, img_corners, h );
+
+    cv::line( img, img_corners[0], img_corners[1], cv::Scalar(0,255,0), 3 );
+    cv::line( img, img_corners[0], img_corners[2], cv::Scalar(0,255,0), 3 );
+    cv::line( img, img_corners[3], img_corners[1], cv::Scalar(0,255,0), 3 );
+    cv::line( img, img_corners[3], img_corners[2], cv::Scalar(0,255,0), 3 );
+  }
+
 }

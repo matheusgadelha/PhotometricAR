@@ -42,8 +42,8 @@ int main( int argc, char** argv )
 			}
 			else
 			{
-				patternDetector.flowTracking( previousFrame, currentFrame );
-//				patternDetector.processFrame( currentFrame );
+				// patternDetector.flowTracking( previousFrame, currentFrame );
+				patternDetector.processFrame( currentFrame );
 			}
 			cv::imshow( "Video", currentFrame );
 			previousFrame = currentFrame.clone();
