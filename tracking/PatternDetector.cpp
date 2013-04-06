@@ -347,7 +347,7 @@ namespace tracking
 		
 		if( this->ratioTestFlag )
 		{
-			const float minRatio = 1.f / 1.5f;
+			// const float minRatio = 1.f / 1.5f;
 			this->multiMatches.clear();
 			this->descriptorMatcher->knnMatch( this->frameDescriptors, this->multiMatches, 1 );
 			

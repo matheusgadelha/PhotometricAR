@@ -1,6 +1,6 @@
 CC = g++
 
-CFLAGS = -Wall -ggdb
+CFLAGS = -Wall -msse4.2 -O3
 
 OPENCV_LS = -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video
 

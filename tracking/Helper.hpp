@@ -24,6 +24,7 @@ namespace Helper
 	void drawPoints	( cv::Mat&, std::vector<cv::Point2f> );
 
 	void drawPattern( cv::Mat&, cv::Mat&, std::vector<cv::Point2f> );
+	void drawPattern( cv::Mat&, std::vector<cv::Point2f> );
 
 
 }

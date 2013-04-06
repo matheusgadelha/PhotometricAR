@@ -1,5 +1,6 @@
 #include "Tracker.hpp" //Tracker
 #include "PatternDetector.hpp" //PatternDetector
+#include "MultiSampledDetector.hpp"
 
 #include <cstdlib> //exit
 #include <iostream> //std::cerr, std::cout
@@ -21,7 +22,7 @@ int main( int argc, char** argv )
 		cv::Mat currentFrame, previousFrame;
 		
 		tracking::Tracker aTracker( pattern_image );
-		tracking::PatternDetector patternDetector( pattern_image );		
+		tracking::MultiSampledDetector patternDetector( pattern_image, 18, 3 );		
 		
 		cv::namedWindow( "Pattern Image" );
 		cv::imshow( "Pattern Image", pattern_image );

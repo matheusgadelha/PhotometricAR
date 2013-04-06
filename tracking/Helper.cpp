@@ -66,4 +66,12 @@ namespace Helper
     cv::line( img, img_corners[3], img_corners[2], cv::Scalar(0,255,0), 3 );
   }
 
+  void drawPattern( cv::Mat& img, std::vector<cv::Point2f> corners )
+  {
+    cv::line( img, corners[0], corners[1], cv::Scalar(255,255,255), 3 );
+    cv::line( img, corners[0], corners[2], cv::Scalar(255,255,255), 3 );
+    cv::line( img, corners[3], corners[1], cv::Scalar(255,255,255), 3 );
+    cv::line( img, corners[3], corners[2], cv::Scalar(255,255,255), 3 );
+  }
+
 }

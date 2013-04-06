@@ -39,23 +39,23 @@ namespace tracking
 
 			//FOR DEBUG PURPOSES
 //			cv::Mat camImg;
-			
-			
-		private:
-			
+
+		protected:
 			Pattern pattern;
-			cv::Mat warpedPattern;
-		
-			cv::Ptr<cv::FeatureDetector> 		featureDetector ;
+
+			cv::Ptr<cv::FeatureDetector>		featureDetector;
 			cv::Ptr<cv::DescriptorExtractor> 	descriptorExtractor;
 			cv::Ptr<cv::DescriptorMatcher>		descriptorMatcher;
-			
-			std::vector<cv::DMatch> 				matches;
-			std::vector< std::vector<cv::DMatch> > 	multiMatches;
-			
+
 			cv::Mat 					frameDescriptors;
 			cv::Mat						frameGray;
 			std::vector<cv::KeyPoint> 	frameKeypoints;
+
+			std::vector<cv::DMatch> 				matches;
+			std::vector< std::vector<cv::DMatch> > 	multiMatches;
+			
+		private:
+			cv::Mat warpedPattern;
 			
 			std::vector<cv::Point2f>  rawFrameKeyPoints;
 			std::vector<cv::Point2f>  rawPatternKeyPoints;

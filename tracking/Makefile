@@ -1,6 +1,6 @@
 CC = g++
 
-CFLAGS = -Wall -ggdb
+CFLAGS = -Wall -msse4.2 -O3
 
 OPENCV_LS = -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video
 
@@ -10,8 +10,8 @@ OPENCV_SO = /usr/local/lib/libopencv_calib3d.so /usr/local/lib/libopencv_contrib
 
 OPENCV = $(OPENCV_LS) $(OPENCV_INCLUDES)
 
-all: Tracker.o Pattern.o Helper.o PatternDetector.o
-	ar rvs libtrack.a Tracker.o Pattern.o Helper.o PatternDetector.o
+all: Tracker.o Pattern.o Helper.o PatternDetector.o MultiSampledDetector.o
+	ar rvs libtrack.a Tracker.o Pattern.o Helper.o PatternDetector.o MultiSampledDetector.o
 	ranlib libtrack.a
 	mv libtrack.a ../lib/
 
@@ -26,6 +26,9 @@ Helper.o: Helper.cpp
 	
 PatternDetector.o: PatternDetector.cpp
 	$(CC) PatternDetector.cpp -c $(CFLAGS) $(OPENCV)
+
+MultiSampledDetector.o: MultiSampledDetector.cpp
+	$(CC) MultiSampledDetector.cpp -c $(CFLAGS) $(OPENCV)
 	
 clean:
 	rm -r *.o
