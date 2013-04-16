@@ -70,6 +70,7 @@ namespace tracking
 			bool patternFound;
 			
 			float homographyAcceptanceThreshold;
+			float maxFlowError;
 			
 			bool computeFeaturesOnFrame(
 					const cv::Mat&,

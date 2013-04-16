@@ -17,6 +17,7 @@ namespace tracking
 		, homographyReprojThreshold( 4.0f )
 		, patternFound( false )
 		, homographyAcceptanceThreshold( 300.0f )
+		, maxFlowError( 35.0f )
 			
 	{
 		this->ratioTestFlag = true;
@@ -61,6 +62,7 @@ namespace tracking
 			cv::Mat& _current_frame
 		)
 	{
+		std::cout << "FLOW PROCESSING\n";
 		if( this->patternFound )
 		{
 			cv::Mat previousGray, currentGray;
@@ -68,42 +70,40 @@ namespace tracking
 			Helper::getGray( _current_frame, currentGray );
 			
 			std::vector<cv::Point2f> currentFrameMatchedPts;
-			
-//			this->removeNonMatchedPoints
-//				(
-//					this->matches,
-//					this->rawPatternKeyPoints,
-//					this->rawFrameKeyPoints
-//				);
+			std::vector<cv::Point2f> trackedFrameMatchedPts;
+			std::vector<cv::Point2f> trackedPatternMatchedPts;
 			
 			std::vector<unsigned char> opticalFlowStatus( this->matches.size() );
 			std::vector<float> opticalFlowError( this->matches.size() );
 			
-			cv::calcOpticalFlowPyrLK
-				(
-					previousGray,
-					currentGray,
-					this->rawFrameKeyPoints,
-					currentFrameMatchedPts,
-					opticalFlowStatus,
-					opticalFlowError
-				);
-			
-//			std::vector<cv::Point2f> oldPatternPoints = this->rawPatternKeyPoints;
-//		
-//			this->rawFrameKeyPoints.clear();
-//			this->rawPatternKeyPoints.clear();
-//			for (unsigned int i = 0; i < opticalFlowStatus.size(); ++i)
-//			{
-//				if( opticalFlowError[i] < 12.0f )
-//				{
-//					this->rawFrameKeyPoints.push_back( currentFrameMatchedPts[i] );
-//					this->rawPatternKeyPoints.push_back( oldPatternPoints[i] );
-//				}
-//			}
+			cv::calcOpticalFlowPyrLK(
+				previousGray,
+				currentGray,
+				this->rawFrameKeyPoints,
+				currentFrameMatchedPts,
+				opticalFlowStatus,
+				opticalFlowError
+			);
 
-			this->rawFrameKeyPoints = currentFrameMatchedPts;
-			
+			for( unsigned i=0; i < currentFrameMatchedPts.size(); ++i )
+			{
+				if( opticalFlowStatus[i] && opticalFlowError[i] < this->maxFlowError )
+				{
+					trackedFrameMatchedPts.push_back( currentFrameMatchedPts[i] );
+					trackedPatternMatchedPts.push_back( this->rawPatternKeyPoints[i] );
+				}
+			}
+
+			this->rawFrameKeyPoints = trackedFrameMatchedPts;
+			this->rawPatternKeyPoints = trackedPatternMatchedPts;
+
+			if( rawFrameKeyPoints.size() <= 6)
+			{
+				this->patternFound = false;
+				cv::KeyPoint::convert(this->pattern.keyPoints, this->rawPatternKeyPoints);
+				return false;
+			}
+
 			this->homography = cv::findHomography(
 				this->rawPatternKeyPoints,
 				this->rawFrameKeyPoints,
@@ -113,64 +113,89 @@ namespace tracking
 													
 			float error;
 													
-			if( (error = calcHomographyError(
+			if( !this->isGoodHomography( this->homography ) ||
+				(error = calcHomographyError(
 							this->homography,
 							this->pattern.keyPoints,
 							this->frameKeypoints,
 							this->matches
 			 			)
-			 	) > homographyAcceptanceThreshold)
+			 	) > homographyAcceptanceThreshold ||
+			 	this->rawFrameKeyPoints.size() <= 4)
 			{
 				this->patternFound = false;
+				cv::KeyPoint::convert(this->pattern.keyPoints, this->rawPatternKeyPoints);
 				return false;
 			}
 			
-			std::cout << error << std::endl;
+			// std::cout << error << std::endl;
 
-			cv::warpPerspective
-					(
-						currentGray,
-						this->warpedPattern,
-						this->homography,
-						this->pattern.getSize(),
-						cv::WARP_INVERSE_MAP | cv::INTER_CUBIC
-					);
+			cv::warpPerspective(
+				currentGray,
+				this->warpedPattern,
+				this->homography,
+				this->pattern.getSize(),
+				cv::WARP_INVERSE_MAP | cv::INTER_CUBIC
+			);
+
+			// std::vector<cv::KeyPoint> rectifiedPatternKps;
+			// std::vector<cv::Point2f> rectifiedPatternPts;
+			// cv::Mat rectifiedPatternDescs;
+
+			// std::vector<cv::KeyPoint> rectifiedFrameKps;
+			// std::vector<cv::Point2f> rectifiedFramePts;
+			// cv::Mat rectifiedFrameDescs;
+
+			// this->featureDetector->detect( this->warpedPattern, rectifiedPatternKps );
+			// this->descriptorExtractor->compute( this->warpedPattern, rectifiedPatternKps, rectifiedPatternDescs );
+
+			// cv::KeyPoint::convert( rectifiedPatternKps, rectifiedPatternPts );
+
+			// cv::perspectiveTransform( rectifiedPatternPts, rectifiedFramePts, this->homography );
+
+			// cv::KeyPoint::convert( rectifiedFramePts, rectifiedFrameKps );
+
+			// this->descriptorExtractor->compute( currentGray, rectifiedFrameKps, rectifiedFrameDescs );
+
+			// this->multiMatches.clear();
+			// this->matches.clear();
+			// this->descriptorMatcher->knnMatch( rectifiedFrameDescs, this->multiMatches, 1 );
 			
+			// for( size_t i = 0; i < this->multiMatches.size(); ++i  )
+			// {
+			// 	const cv::DMatch& bestMatch = this->multiMatches[i][0];
+
+			// 	if( bestMatch.distance < 50 )
+			// 	{
+			// 		this->matches.push_back( bestMatch );
+			// 	}
+			// }
+
+			// this->rawFrameKeyPoints.clear();
+			// this->rawFrameKeyPoints.resize(this->matches.size());
+
+			// this->rawPatternKeyPoints.clear();
+			// this->rawPatternKeyPoints.resize(this->matches.size());
+
+			// for( unsigned i = 0; i < this->matches.size(); ++i )
+			// {
+			// 	this->rawFrameKeyPoints[i] = rectifiedFrameKps[this->matches[i].queryIdx].pt;
+			// 	this->rawPatternKeyPoints[i] = rectifiedFrameKps[this->matches[i].trainIdx].pt;
+			// }
+
+			// this->homography = cv::findHomography(
+			// 	this->rawPatternKeyPoints,
+			// 	this->rawFrameKeyPoints,
+			// 	CV_FM_RANSAC,
+			// 	this->homographyReprojThreshold
+			// );
+
 #ifdef DEBUG_MODE
-			Helper::drawPoints( _current_frame, this->rawFrameKeyPoints );
+			// Helper::drawPoints( _current_frame, rectifiedFramePts );
 			Helper::drawPattern( _current_frame, this->homography, this->pattern.points2d );
 #endif
+			
 			cv::imshow("Warped Image", this->warpedPattern);
-//			
-//			std::vector<cv::KeyPoint> warpedKeyPoints;
-//			std::vector<cv::Point2f> newFrameKeyPoints;
-//			
-//			this->featureDetector->detect( this->warpedPattern, warpedKeyPoints );
-//			cv::KeyPoint::convert( warpedKeyPoints, newFrameKeyPoints );			
-//			cv::perspectiveTransform( newFrameKeyPoints, this->rawFrameKeyPoints, this->homography );
-//			
-//			cv::KeyPoint::convert( this->rawFrameKeyPoints, this->frameKeypoints );
-//			
-//			descriptorExtractor->compute
-//			(
-//				frameGray,
-//				this->frameKeypoints,
-//				this->frameDescriptors
-//			);
-//			
-//			this->descriptorMatcher->match( this->frameDescriptors, this->matches );
-//			
-//			this->rawPatternKeyPoints.resize( this->matches.size() );
-//			this->rawFrameKeyPoints.resize( this->matches.size() );
-//			
-//			for( size_t i = 0; i < this->matches.size(); ++i )
-//			{
-//				this->rawFrameKeyPoints[i] = this->frameKeypoints[this->matches[i].queryIdx].pt;
-//				this->rawPatternKeyPoints[i] = this->pattern.keyPoints[this->matches[i].trainIdx].pt;
-//			}
-//			
-//			//this->homographyMatching();
-
 			return true;
 		}
 		else
@@ -182,6 +207,7 @@ namespace tracking
 	
 	bool PatternDetector::processFrame( cv::Mat& _frame )
 	{
+		std::cout << "SINGLE FRAME PROCESSING\n";
 		clock_t start = clock();
 		clock_t generate_start, generate_end, homo_start, homo_end;
 
@@ -226,12 +252,11 @@ namespace tracking
 #ifdef DEBUG_MODE
 				cv::imshow("Warped Image", this->warpedPattern);
 #endif
-				// this->homographyRefinement
-				// 	(
-				// 		this->pattern.keyPoints,
-				// 		this->frameKeypoints,
-				// 		this->homography
-				// 	);
+				// this->homographyRefinement(
+				// 	this->pattern.keyPoints,
+				// 	this->frameKeypoints,
+				// 	this->homography
+				// );
 			}
 
 			else
@@ -270,7 +295,8 @@ namespace tracking
 						patternMatchedPoints,
 						this->frameKeypoints,
 						this->matches
-			 		) < this->homographyAcceptanceThreshold)
+			 		) < this->homographyAcceptanceThreshold
+			 	)
 			{
 				this->patternFound = true;
 				std::cout << "PATTERN FOUND\n";
@@ -358,7 +384,7 @@ namespace tracking
 				
 				// float distanceRatio = bestMatch.distance / betterMatch.distance;
 				
-				if( bestMatch.distance < 40 )
+				if( bestMatch.distance < 50 )
 				{
 					this->matches.push_back( bestMatch );
 				}
@@ -532,8 +558,13 @@ namespace tracking
 		{
 			totalDistance += cv::norm( trainPoints[i] - resultPoints[i] );
 		}
-		
-		return totalDistance / float( resultPoints.size() );
+
+		if( resultPoints.size() < 4 ) return std::numeric_limits<float>::max();
+		else
+		{
+			return totalDistance / float( resultPoints.size() );
+		}
+
 	}
 	
 	void PatternDetector::removeNonMatchedKeyPoints(
@@ -594,19 +625,19 @@ namespace tracking
 		if( std::abs( cv::determinant(h) ) < 0.1 ) return false;
 		if( std::abs( cv::determinant(h) ) > 3 ) return false;
 
-		// const double N1 = std::sqrt(h.at<double>(0,0)*h.at<double>(0,0) + h.at<double>(1,0)*h.at<double>(1,0));
-		// if( N1 > 4 || N1 < 0.1) return false;
+		const double N1 = std::sqrt(h.at<double>(0,0)*h.at<double>(0,0) + h.at<double>(1,0)*h.at<double>(1,0));
+		if( N1 > 4 || N1 < 0.1) return false;
 
-		// const double N2 = std::sqrt(h.at<double>(0,1)*h.at<double>(0,1) + h.at<double>(1,1)*h.at<double>(1,1));
-		// if( N2 > 4 || N2 < 0.1) return false;
+		const double N2 = std::sqrt(h.at<double>(0,1)*h.at<double>(0,1) + h.at<double>(1,1)*h.at<double>(1,1));
+		if( N2 > 4 || N2 < 0.1) return false;
 
-		// const double N3 = std::sqrt(h.at<double>(2,0)*h.at<double>(2,0) + h.at<double>(2,1)*h.at<double>(2,1));
-		// if( N3 > 0.002 ) return false;
+		const double N3 = std::sqrt(h.at<double>(2,0)*h.at<double>(2,0) + h.at<double>(2,1)*h.at<double>(2,1));
+		if( N3 > 0.002 ) return false;
 
-		cv::Mat h_svd;
-		cv::SVD::compute(h, h_svd);
-		double svd_expr = h_svd.at<double>(0,0) / h_svd.at<double>(0,2);
-		if( svd_expr > 17000) return false; 
+		// cv::Mat h_svd;
+		// cv::SVD::compute(h, h_svd);
+		// double svd_expr = h_svd.at<double>(0,0) / h_svd.at<double>(0,2);
+		// if( svd_expr > 17000) return false; 
 
 		return true;
 		

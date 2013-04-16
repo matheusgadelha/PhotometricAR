@@ -51,7 +51,7 @@ namespace Helper
   {
   	for (unsigned int i = 0; i < points.size(); ++i)
   	{
-  		cv::circle( img, points[i], 3, cv::Scalar( 255, 0, 0 ), 3 );
+  		cv::circle( img, points[i], 3, cv::Scalar( 255, 0, 0 ), 2 );
   	}
   }
 

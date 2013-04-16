@@ -22,7 +22,7 @@ int main( int argc, char** argv )
 		cv::Mat currentFrame, previousFrame;
 		
 		tracking::Tracker aTracker( pattern_image );
-		tracking::MultiSampledDetector patternDetector( pattern_image, 18, 3 );		
+		tracking::PatternDetector patternDetector( pattern_image );		
 		
 		cv::namedWindow( "Pattern Image" );
 		cv::imshow( "Pattern Image", pattern_image );
@@ -37,17 +37,18 @@ int main( int argc, char** argv )
 			}
 			
 			if ( (cvWaitKey(10) & 255) == 27 ) break;
-			if( previousFrame.empty() )
-			{
-				patternDetector.processFrame( currentFrame );
-			}
-			else
-			{
-				// patternDetector.flowTracking( previousFrame, currentFrame );
-				patternDetector.processFrame( currentFrame );
-			}
+			patternDetector.processFrame( currentFrame );
+			// if( previousFrame.empty() )
+			// {
+			// 	patternDetector.processFrame( currentFrame );
+			// }
+			// else
+			// {
+			// 	// patternDetector.flowTracking( previousFrame, currentFrame );
+			// 	patternDetector.processFrame( currentFrame );
+			// }
 			cv::imshow( "Video", currentFrame );
-			previousFrame = currentFrame.clone();
+			// previousFrame = currentFrame.clone();
 		}
 		
 	}
