@@ -3,7 +3,7 @@
 namespace tracking
 {		
 
-	Pattern::Pattern( cv::Mat& _pattern_img )
+	Pattern::Pattern( const cv::Mat& _pattern_img )
 	{
 		Helper::getGray( _pattern_img, this->image );
 		

@@ -5,7 +5,7 @@ namespace tracking
 
 	PatternDetector::PatternDetector
 		(
-			cv::Mat& 							_pattern_img,
+			const cv::Mat& 						_pattern_img,
 			cv::Ptr<cv::FeatureDetector> 		_feature_detector,
 			cv::Ptr<cv::DescriptorExtractor> 	_descriptor_extractor,
 			cv::Ptr<cv::DescriptorMatcher> 		_descriptor_matcher

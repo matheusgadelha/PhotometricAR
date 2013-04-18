@@ -14,7 +14,7 @@ namespace tracking
 		
 		public:
 			
-			Pattern( cv::Mat& _pattern_img );
+			Pattern( const cv::Mat& _pattern_img );
 			cv::Size getSize();
 		
 			cv::Mat	image;

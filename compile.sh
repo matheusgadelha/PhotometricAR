@@ -16,15 +16,30 @@ cd ..
 
 
 #-------------------------------------------------------------------------------
-#TRACKING TEST PROGRAM CREATION
+#RENDERING LIBRARY CREATION
+#-------------------------------------------------------------------------------
+cd rendering
+make
+
+if [ "$?" = "0" ]; then
+	echo "\n\t***INFO: Rendering library successfully created at ./lib/librendering.a\n"
+else
+	echo "\n\tERROR: Creating rendering library\n"
+fi
+
+make clean
+cd ..
+
+#-------------------------------------------------------------------------------
+#TRACKING & RENDERING TEST PROGRAM CREATION
 #-------------------------------------------------------------------------------
 cd tst
 make
 
 if [ "$?" = "0" ]; then
-	echo "\n\t***INFO: Test program for tracking succesfully created at ./bin/tst-track\n"
+	echo "\n\t***INFO: Test programs for tracking & rendering succesfully created at ./bin/tst-track\n"
 else
-	echo "\n\tERROR: Creating tracking test program\n"
+	echo "\n\tERROR: Creating test programs\n"
 fi
 
 make clean

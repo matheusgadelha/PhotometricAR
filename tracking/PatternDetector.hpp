@@ -20,7 +20,7 @@ namespace tracking
 		
 			PatternDetector
 				( 
-					cv::Mat& 							_pattern_img,
+					const cv::Mat& 						_pattern_img,
 					// cv::Ptr<cv::FeatureDetector> 		_feature_detector 		= new cv::FastFeatureDetector(100),
 					cv::Ptr<cv::FeatureDetector> 		_feature_detector       = new cv::ORB(600, 1.5, 4, 31, 0, 2, cv::ORB::FAST_SCORE ),
 					cv::Ptr<cv::DescriptorExtractor> 	_descriptor_extractor	= new cv::ORB(600, 1.5, 4, 31, 0, 2, cv::ORB::FAST_SCORE ),

@@ -12,13 +12,17 @@ OPENCV = $(OPENCV_LS) $(OPENCV_INCLUDES)
 
 LIB_DIR = -L../lib/
 
-LS = -ltrack
+OPENGL_LS = -lGL -lGLEW -lglut
 
-INCLUDES = -I../tracking
+LS = -ltrack -lrender
 
-all: tst-track.cpp
+INCLUDES = -I../tracking -I../rendering	
+
+all: tst-track.cpp tst-render.cpp
 	$(CC) tst-track.cpp -o tst-track $(CFLAGS) $(LIB_DIR) $(LS) $(OPENCV) $(INCLUDES) 
 	mv tst-track ../bin/
+	$(CC) tst-render.cpp -o tst-render $(CFLAGS) $(LIB_DIR) $(LS) $(OPENGL_LS) $(INCLUDES) 
+	mv tst-render ../bin/
 	
 clean:
 	cd .

@@ -3,6 +3,7 @@
 
 #include "Pattern.hpp"
 #include "Helper.hpp"
+#include "PatternDetector.hpp"
 
 namespace tracking
 {
@@ -13,13 +14,13 @@ namespace tracking
 		public:
 		
 			Tracker( const cv::Mat& _pattern );
-			bool processFrame( const cv::Mat& _input_frame );
+			bool processFrame( cv::Mat& _input_frame );
 			const cv::Mat getHomography() const;
 			
 		private:
-			
 			cv::Mat homography;
 			cv::Mat pattern;
+			PatternDetector patternDetector;
 	
 	};
 

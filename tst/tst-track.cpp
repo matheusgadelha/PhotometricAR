@@ -17,11 +17,12 @@ int main( int argc, char** argv )
 	else
 	{
 		cv::VideoCapture capture(0);
+		capture.set(CV_CAP_PROP_FPS, 40.0f);
 	
 		cv::Mat pattern_image = cv::imread(argv[1]);
 		cv::Mat currentFrame, previousFrame;
 		
-		tracking::Tracker aTracker( pattern_image );
+		tracking::Tracker tracker( pattern_image );
 		tracking::PatternDetector patternDetector( pattern_image );		
 		
 		cv::namedWindow( "Pattern Image" );
@@ -37,7 +38,7 @@ int main( int argc, char** argv )
 			}
 			
 			if ( (cvWaitKey(10) & 255) == 27 ) break;
-			patternDetector.processFrame( currentFrame );
+			tracker.processFrame( currentFrame );
 			// if( previousFrame.empty() )
 			// {
 			// 	patternDetector.processFrame( currentFrame );
