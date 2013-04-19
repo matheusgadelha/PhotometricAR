@@ -12,7 +12,9 @@
 
 namespace tracking
 {
-
+	/**
+	 * Class created to perform detection and tracking of patterns
+	 */
 	class PatternDetector
 	{
 		

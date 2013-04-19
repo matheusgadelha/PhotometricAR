@@ -18,6 +18,7 @@ namespace tracking
 			cv::Size getSize();
 		
 			cv::Mat	image;
+			cv::Mat image_color;
 			cv::Mat	descriptors;
 			
 			std::vector<cv::KeyPoint> keyPoints;

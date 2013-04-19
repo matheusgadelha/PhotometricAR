@@ -3,6 +3,13 @@
 namespace tracking
 {
 
+	/**
+	 * Class constructor.
+	 * @param _pattern_img an image representing the pattern to be tracked. A simple .jpg or .png loaded into a cv::Mat.
+	 * @param _feature_detector an object to detect keypoints. It will be used to detect scene and pattern keypoints.
+	 * @param _descriptor_extractor a descriptor extractor to compute descriptors for detected keypoints. It will be used do compute scene and pattern descriptors.
+	 * @param _descriptor_matcher a descriptor matched used to match scene and pattern descriptors in order to compute homography.
+	 */
 	PatternDetector::PatternDetector
 		(
 			const cv::Mat& 						_pattern_img,
@@ -20,42 +27,56 @@ namespace tracking
 		, maxFlowError( 35.0f )
 			
 	{
+		// Using ratio test flag
 		this->ratioTestFlag = true;
+		// Removes outliers according to homography model. Reduces number of tracked points. Increases precision.
 		this->homographyMatchingFlag = true;
+		// Tests if pattern was correctly trained
 		assert( this->train() );
 	}
 	
+	/**
+	 * Trains the patter. In other words, detects keypoints and computes its descriptors.
+	 *
+	 * @returns true if pattern was correctly trained (there are enough points to track). false if is a bad pattern.
+	 */
 	bool PatternDetector::train()
 	{
+		// Detects keypoints
 		featureDetector->detect( this->pattern.image, this->pattern.keyPoints );
+		// Converts keypoints do regular points (useful for optical flow tracking)
 		cv::KeyPoint::convert(this->pattern.keyPoints, this->rawPatternKeyPoints);
 		
-		if( this->pattern.keyPoints.size() <= 4 )
+		// Checks if there are enough points
+		if( this->pattern.keyPoints.size() <= 15 )
 		{
 			std::cerr << "FATAL ERROR: Insuficient KeyPoints at pattern image...\n"
 								<< "Terminating...\n";
 			return false;
 		}
 		
+		// Computes descriptors
 		descriptorExtractor->compute
 			(
 				this->pattern.image,
 				this->pattern.keyPoints,
 				this->pattern.descriptors
 			);
-			
+		
+		// Clears all matches (sanity purposes)
 		this->descriptorMatcher->clear();
 		
+		// Creates descriptor and trains matches
 		std::vector<cv::Mat> descriptors(1);
 		descriptors[0] = this->pattern.descriptors.clone();
 		
 		this->descriptorMatcher->add( descriptors );
 		this->descriptorMatcher->train();
 		
-		std::cout << "Training successful!\n";
 		return true;
 	}
 	
+	// Performs flow tracking. This is not beign used anymore. I will keep this code here just for safety.
 	bool PatternDetector::flowTracking
 		(
 			const cv::Mat& _previous_frame,
@@ -205,89 +226,137 @@ namespace tracking
 		}
 	}
 	
+	/**
+	 * This method processes a scene frame and tracks the pattern on it.
+	 * If no pattern is found, the variavle patternFound is set to false.
+	 * If the pattern was found, is possible to check the homography transformation that leads the pattern position and orientation on the scene.
+	 * 
+	 * @param _frame a frame image contatining a scene where the pattern will be tracked.
+	 * @return true if pattern was found. false otherwise
+	 */
 	bool PatternDetector::processFrame( cv::Mat& _frame )
 	{
-		std::cout << "SINGLE FRAME PROCESSING\n";
+		// Clock variables to check time spent on different parts of the code
 		clock_t start = clock();
-		clock_t generate_start, generate_end, homo_start, homo_end;
+		// clock_t generate_start, generate_end, homo_start, homo_end;
 
+		// Converts frame to gray
 		Helper::getGray( _frame, this->frameGray );
 
-		generate_start = clock();
+		// Generate matches between pattern and scene descriptors
 		if( this->generateMatches(
 						this->frameGray,
 						this->frameKeypoints,
 						this->frameDescriptors,
 						this->matches
 		))
-		{
-#ifdef DEBUG_MODE
-			cv::imshow( "Raw Matching", Helper::getMatchesImage( _frame, this->pattern.image, this->frameKeypoints,	this->pattern.keyPoints, this->matches, 500 ));
-#endif		
-			generate_end = clock();
-
-			homo_start = clock();
+		{	
+			// If we want to match points that fit homography...
 			if( this->homographyMatchingFlag )
 			{
+				// If homography matching failed, no pattern is on the scene. return false
 				if( not this->homographyMatching(
-										this->matches,
-										this->homography,
-										this->pattern.keyPoints,
-										this->frameKeypoints,
-										this->homographyReprojThreshold
-									)) return false;
-				homo_end = clock();
-#ifdef DEBUG_MODE
-				cv::imshow( "RANSAC Refined",	Helper::getMatchesImage( _frame, this->pattern.image,	this->frameKeypoints, this->pattern.keyPoints, this->matches, 500	 ));
-				Helper::drawPoints( _frame, this->rawFrameKeyPoints );
-#endif
+					this->matches,
+					this->homography,
+					this->pattern.keyPoints,
+					this->frameKeypoints,
+					this->homographyReprojThreshold
+				))
+				{
+					this->patternFound = false;
+					return false;
+				} 
+
+				// Generates warped image
 				cv::warpPerspective
 					(
-						this->frameGray,
+						_frame,
 						this->warpedPattern,
 						this->homography,
 						this->pattern.getSize(),
 						cv::WARP_INVERSE_MAP | cv::INTER_CUBIC
 					);
+
+				// Scales warped image and original pattern by 0.125
+				cv::resize(this->warpedPattern, this->warpedPattern, cv::Size(0,0), 0.125, 0.125);
+				cv::Mat color_pattern;
+				cv::resize(this->pattern.image_color, color_pattern, cv::Size(0,0), 0.125, 0.125);
+
+				// Illumination image
+				cv::Mat illu_diff = this->warpedPattern - color_pattern;
+				// Erodes image to reduce noise
+				cv::erode( illu_diff, illu_diff, cv::Mat() );
+				cv::erode( illu_diff, illu_diff, cv::Mat() );
+				cv::Mat illu_area, gray_illu_diff;
+				Helper::getGray( illu_diff, gray_illu_diff );
+				cv::inRange(gray_illu_diff, cv::Scalar(20), cv::Scalar(255) ,illu_area);
+				cv::blur( illu_area, illu_area, cv::Size(7,7));
+				// cv::bitwise_and( illu_area, illu_diff, illu_diff);
+				// cv::inRange(illu_area, cv::Scalar(1), cv::Scalar(255) ,illu_area);
+
+				// Light map image
+				cv::Mat light_map;
+				cv::divide(this->warpedPattern, color_pattern, light_map);
+				light_map *= 255;
+				cv::blur( light_map, light_map, cv::Size(11,11));
+
+				cv::Scalar env_light = cv::mean(light_map);
+				env_light[0] = env_light[0]/255.0f;
+				env_light[1] = env_light[1]/255.0f;
+				env_light[2] = env_light[2]/255.0f;
+
+				std::cout << "Environment Light:\n"
+						  << "R => " << env_light[2] << std::endl
+						  << "G => " << env_light[1] << std::endl
+						  << "B => " << env_light[0] << std::endl;
+
+				// cv::Mat pattern_diff = illu_diff + dark_diff;
+
+				// cv::blur( pattern_diff, pattern_diff, cv::Size(7,7));
+				// cv::dilate( pattern_diff, pattern_diff, cv::Mat() );
+
+				// pattern_diff *= 5;
+
+				cv::imwrite("results/light_map.png", light_map);
+				cv::imwrite("results/rectified.png", this->warpedPattern);
+				cv::imwrite("results/original.png", color_pattern);
+				cv::imwrite("results/scene.png", _frame);
+
 #ifdef DEBUG_MODE
 				cv::imshow("Warped Image", this->warpedPattern);
+				cv::imshow("Pattern resized", color_pattern);
+				cv::imshow("Illu", illu_diff);
+				cv::imshow("Area illuminated", illu_area);
+				cv::imshow("Light Map", light_map);
 #endif
+
 				// this->homographyRefinement(
 				// 	this->pattern.keyPoints,
 				// 	this->frameKeypoints,
 				// 	this->homography
 				// );
 			}
-
+			// If we are not using homography matching
 			else
 			{
+				// Matches points and computes homography
 				std::vector<cv::Point2f> frameMatchedPts, patternMatchedPts;
 				frameMatchedPts = this->rawFrameKeyPoints;
 				patternMatchedPts = this->rawPatternKeyPoints;
 
 				this->removeNonMatchedPoints( this->matches, patternMatchedPts, frameMatchedPts );
 
-				homo_start = clock();
 				this->homography = cv::findHomography(
 					patternMatchedPts,
 					frameMatchedPts,
 					CV_RANSAC, 10
 				);
-				homo_end = clock();
 			}
 
+			// Stores pattern matched points for homography error computation
 			std::vector<cv::KeyPoint> patternMatchedPoints = this->pattern.keyPoints;
-#ifdef DEBUG_MODE	
-			std::cout << "HOMOGRAPHY ERROR: " << this->calcHomographyError
-				(
-					this->homography,
-					patternMatchedPoints,
-					this->frameKeypoints,
-					this->matches
-			 	)
-			<< std::endl;
-#endif
 
+			// Tests if we have a good homography and if its error is low below the defined threshold.
 			if( this->isGoodHomography( this->homography ) && 
 				this->calcHomographyError
 					(
@@ -299,57 +368,72 @@ namespace tracking
 			 	)
 			{
 				this->patternFound = true;
-				std::cout << "PATTERN FOUND\n";
 			}
 			else
 			{
 				this->patternFound = false;
+				return false;
 			}
-#ifdef DEBUG_MODE
 			Helper::drawPattern( _frame, this->homography, this->pattern.points2d );
-#endif
 		}
 
 		clock_t ends = clock();
 	    std::cout << "Total time elapsed :" << (double) (ends - start) / CLOCKS_PER_SEC << std::endl;
-	    std::cout << "Matching:" << (double) (generate_end - generate_start) / CLOCKS_PER_SEC << std::endl;
-	    std::cout << "Homography Matching:" << (double) (homo_end - homo_start) / CLOCKS_PER_SEC << std::endl;
 		
 		return true;
 	}
 	
+	/**
+	 * Computes features on a frame
+	 * 
+	 * @param _frame a frame where will extract keypoints and their descriptors
+	 * @param _key_points a set of keypoints that will receive the _frame detect points
+	 * @param _descriptors a set of descriptor that will receive the _frame computed descriptors
+	 * @return true if enough keypoints are found. false otherwise.
+	 */
 	bool PatternDetector::computeFeaturesOnFrame(
 			const cv::Mat& 				_frame,
 			std::vector<cv::KeyPoint>& 	_key_points,
 			cv::Mat& 					_descriptors 
 		)
 	{	
+		// Variables to measure detection an description time
+		// clock_t detection_start, detection_end, desc_start, desc_end;
 
-		clock_t detection_start, detection_end, desc_start, desc_end;
-
-		detection_start = clock();
+		// detection_start = clock();
 		featureDetector->detect( _frame, _key_points );
+		// Too few keypoints were detecte...
 		if( this->pattern.keyPoints.size() <= 4 )
 		{
 			return false;
 		}
-		detection_end = clock();
+		// detection_end = clock();
 		
-		desc_start = clock();
+		// desc_start = clock();
+		// Compute descriptors
 		descriptorExtractor->compute
 			(
 				_frame,
 				_key_points,
 				_descriptors
 			);
-		desc_end = clock();
+		// desc_end = clock();
 
-		std::cout << "Detection:" << (double) (detection_end - detection_start) / CLOCKS_PER_SEC << std::endl;
-		std::cout << "Description:" << (double) (desc_end - desc_start) / CLOCKS_PER_SEC << std::endl;
+		// std::cout << "Detection:" << (double) (detection_end - detection_start) / CLOCKS_PER_SEC << std::endl;
+		// std::cout << "Description:" << (double) (desc_end - desc_start) / CLOCKS_PER_SEC << std::endl;
 		
 		return true;		
 	}
 	
+	/**
+	 * Matches pattern descriptors with the descriptor passed as arguments.
+	 *
+	 * @param _frame frame where we will look for the pattern.
+	 * @param _query_key_points a set where we will store the frame keypoints.
+	 * @param _query_descriptorsa set where we will store the frame descriptors.
+	 * @param _matches a set where we will store the performed matches.
+	 * @return true if operation was completed succesfully. false otherwise.
+	 */
 	bool PatternDetector::generateMatches(
 			const cv::Mat&				_frame,
 			std::vector<cv::KeyPoint>& 	_query_key_points,
@@ -357,8 +441,7 @@ namespace tracking
 			std::vector<cv::DMatch>& 	_matches 
 		)
 	{
-		clock_t compute_start = clock();
-		clock_t compute_end;
+		// Tests if enough features were computed
 		if( not this->computeFeaturesOnFrame(
 							_frame,
 							_query_key_points,
@@ -367,21 +450,24 @@ namespace tracking
 		{
 			return false;
 		}
-		compute_end = clock();
 		
+		// Clears previous matches
 		_matches.clear();
 		
+		// Tests if we want to perform a ratio test
 		if( this->ratioTestFlag )
 		{
 			// const float minRatio = 1.f / 1.5f;
+			// Cleans matches
 			this->multiMatches.clear();
+			// Selects only the best match
 			this->descriptorMatcher->knnMatch( this->frameDescriptors, this->multiMatches, 1 );
 			
+			// Tests if each match is close enough to be considered a good one.
 			for( size_t i = 0; i < this->multiMatches.size(); ++i  )
 			{
 				const cv::DMatch& bestMatch = this->multiMatches[i][0];
 				// const cv::DMatch& betterMatch = this->multiMatches[i][1];
-				
 				// float distanceRatio = bestMatch.distance / betterMatch.distance;
 				
 				if( bestMatch.distance < 50 )
@@ -394,15 +480,19 @@ namespace tracking
 		{
 			this->descriptorMatcher->match( _query_descriptors, _matches );
 		}
-		std::cout << "Ratio Test:" << (double) (compute_end - compute_start) / CLOCKS_PER_SEC << std::endl;
-
-		std::cout << _matches.size() << std::endl;
 		
+		// If not enough matches have been done, return failure
 		if( _matches.size() < 4 ) return false;
 		
+		// Everything worked!
 		return true;
 	}
 	
+	/**
+	 * Matches descriptors according to then ransac generated homography.
+	 *
+	 * @param _reproj_threshold reprojection error tolerated by the homography to include points at inliers.
+	 */
 	bool PatternDetector::homographyMatching(
 			std::vector<cv::DMatch>& 	_matches,
 			cv::Mat& 					_homography,
@@ -411,20 +501,23 @@ namespace tracking
 			float						_reproj_threshold
 		)
 	{
-		const unsigned minMatchesAllowed = 6;
+		const unsigned minMatchesAllowed = 8;
 		
 		if( _matches.size() < minMatchesAllowed ) return false;
 	
 		this->rawPatternKeyPoints.resize( _matches.size() );
 		this->rawFrameKeyPoints.resize( _matches.size() );
 			
+		// Deals only with matched points, excluding non previously matched.
 		for( size_t i = 0; i < _matches.size(); ++i )
 		{
 			this->rawFrameKeyPoints[i] = _query_key_points[_matches[i].queryIdx].pt;
 			this->rawPatternKeyPoints[i] = _train_key_points[_matches[i].trainIdx].pt;
 		}
-				
+		
+		// Compute an inliers mask
 		std::vector<unsigned char> inliersMask( this->rawPatternKeyPoints.size() );
+		// Compute homography passing the inliers mask
 		_homography = cv::findHomography(
 				this->rawPatternKeyPoints,
 				this->rawFrameKeyPoints,
@@ -432,14 +525,12 @@ namespace tracking
 				_reproj_threshold,
 				inliersMask
 		);
-													
-//		std::vector<cv::Point2f> oldFramePts, oldPatternPts;
-//		oldFramePts = this->rawFrameKeyPoints;
-//		oldPatternPts = this->rawPatternKeyPoints;
 		
+		// Clears raw points
 		this->rawFrameKeyPoints.clear();
 		this->rawPatternKeyPoints.clear();
 		
+		// Fills points with inliers
 		std::vector<cv::DMatch> inliers;
 		for( size_t i = 0; i<inliersMask.size(); ++i )
 		{
@@ -450,14 +541,14 @@ namespace tracking
 				this->rawPatternKeyPoints.push_back( _train_key_points[_matches[i].trainIdx].pt );
 			}
 		}
+		// Puts inliers on matches vector
 		_matches.swap( inliers );
-		
-//		cv::KeyPoint::convert(_query_key_points, this->rawFrameKeyPoints);
-//		cv::KeyPoint::convert(_query_key_points, this->rawPatternKeyPoints);
-		
+			
+		// True if enough matches were found
 		return _matches.size() > minMatchesAllowed;
 	}
-	
+
+	// Extract feature from a frame
 	void PatternDetector::extractFeatures(
 			const cv::Mat& 				_frame,
 			std::vector<cv::KeyPoint>& 	_key_points,
@@ -471,14 +562,33 @@ namespace tracking
 		this->descriptorExtractor->compute( grayFrame, _key_points, _descriptors );
 	}
 	
+	// Matches descriptors
 	void PatternDetector::performMatching(
 			const cv::Mat& 				_descriptors,
 			std::vector<cv::DMatch>& 	_matches
 		)
 	{
-		this->descriptorMatcher->match( _descriptors, _matches );
+		// const float minRatio = 1.f / 1.5f;
+		// Cleans matches
+		this->multiMatches.clear();
+		// Selects only the best match
+		this->descriptorMatcher->knnMatch( _descriptors, this->multiMatches, 1 );
+		
+		// Tests if each match is close enough to be considered a good one.
+		for( size_t i = 0; i < this->multiMatches.size(); ++i  )
+		{
+			const cv::DMatch& bestMatch = this->multiMatches[i][0];
+			// const cv::DMatch& betterMatch = this->multiMatches[i][1];
+			// float distanceRatio = bestMatch.distance / betterMatch.distance;
+			
+			if( bestMatch.distance < 50 )
+			{
+				_matches.push_back( bestMatch );
+			}
+		}
 	}
 	
+	// Refines Homography
 	void PatternDetector::homographyRefinement(
 			std::vector<cv::KeyPoint> 	_train_key_points,
 			std::vector<cv::KeyPoint> 	_query_key_points,
@@ -506,13 +616,13 @@ namespace tracking
 		
 		this->performMatching( warpedDescriptors, refinedMatches );
 		this->homographyMatching
-			(
-				refinedMatches,
-				refinedHomography,
-				_train_key_points,
-				warpedKeyPoints,
-				1.0f
-			);
+		(
+			refinedMatches,
+			refinedHomography,
+			_train_key_points,
+			warpedKeyPoints,
+			1.0f
+		);
 			
 		_homography = oldHomography * refinedHomography;
 			
@@ -633,11 +743,6 @@ namespace tracking
 
 		const double N3 = std::sqrt(h.at<double>(2,0)*h.at<double>(2,0) + h.at<double>(2,1)*h.at<double>(2,1));
 		if( N3 > 0.002 ) return false;
-
-		// cv::Mat h_svd;
-		// cv::SVD::compute(h, h_svd);
-		// double svd_expr = h_svd.at<double>(0,0) / h_svd.at<double>(0,2);
-		// if( svd_expr > 17000) return false; 
 
 		return true;
 		

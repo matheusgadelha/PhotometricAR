@@ -6,6 +6,7 @@ namespace tracking
 	Pattern::Pattern( const cv::Mat& _pattern_img )
 	{
 		Helper::getGray( _pattern_img, this->image );
+		this->image_color = _pattern_img;
 		
 		float w = this->image.cols;
 		float h = this->image.rows;
