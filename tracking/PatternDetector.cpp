@@ -278,9 +278,9 @@ namespace tracking
 					);
 
 				// Scales warped image and original pattern by 0.125
-				cv::resize(this->warpedPattern, this->warpedPattern, cv::Size(0,0), 0.125, 0.125);
+				cv::resize(this->warpedPattern, this->warpedPattern, cv::Size(0,0), 0.5, 0.5);
 				cv::Mat color_pattern;
-				cv::resize(this->pattern.image_color, color_pattern, cv::Size(0,0), 0.125, 0.125);
+				cv::resize(this->pattern.image_color, color_pattern, cv::Size(0,0), 0.5, 0.5);	
 
 				// Illumination image
 				cv::Mat illu_diff = this->warpedPattern - color_pattern;
@@ -289,16 +289,24 @@ namespace tracking
 				cv::erode( illu_diff, illu_diff, cv::Mat() );
 				cv::Mat illu_area, gray_illu_diff;
 				Helper::getGray( illu_diff, gray_illu_diff );
-				cv::inRange(gray_illu_diff, cv::Scalar(20), cv::Scalar(255) ,illu_area);
+				cv::inRange(gray_illu_diff, cv::Scalar(50), cv::Scalar(255) ,illu_area);
 				cv::blur( illu_area, illu_area, cv::Size(7,7));
 				// cv::bitwise_and( illu_area, illu_diff, illu_diff);
 				// cv::inRange(illu_area, cv::Scalar(1), cv::Scalar(255) ,illu_area);
 
 				// Light map image
 				cv::Mat light_map;
+				light_map.convertTo(light_map, CV_32FC3);
+				color_pattern.convertTo(color_pattern, CV_32FC3);
+				this->warpedPattern.convertTo(this->warpedPattern, CV_32FC3);
+				// cv::subtract( color_pattern, cv::Scalar(30, 30, 30), color_pattern);
 				cv::divide(this->warpedPattern, color_pattern, light_map);
-				light_map *= 255;
-				cv::blur( light_map, light_map, cv::Size(11,11));
+				// light_map *= 255;
+				cv::normalize(light_map, light_map, 0, 1, cv::NORM_MINMAX);
+				cv::multiply(light_map, cv::Scalar(100,100,100), light_map);
+				// cv::multiply(light_map, color_pattern, light_map);
+				// light_map.convertTo(light_map, CV_8UC3);
+				cv::blur( light_map, light_map, cv::Size(15,15));
 
 				cv::Scalar env_light = cv::mean(light_map);
 				env_light[0] = env_light[0]/255.0f;
