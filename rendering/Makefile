@@ -1,8 +1,10 @@
 CC = g++
 
-CFLAGS = -Wall -msse4.2 -O3
+CFLAGS = -Wall -msse4.2 -O3 -ggdb
 
 OPENGL_LS = -lGL -lGLEW -lglut
+
+INC_DIR_GLM = -I../glm
 
 # OPENCV_LS = -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video
 
@@ -12,13 +14,22 @@ OPENGL_LS = -lGL -lGLEW -lglut
 
 # OPENCV = $(OPENCV_LS) $(OPENCV_INCLUDES)
 
-all: RenderingWindow.o
-	ar rvs librender.a RenderingWindow.o
+all: RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o 
+	ar rvs librender.a RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o
 	ranlib librender.a
 	mv librender.a ../lib/
 
 RenderingWindow.o: RenderingWindow.cpp
-	$(CC) RenderingWindow.cpp -c $(CFLAGS) $(OPENGL_LS)
+	$(CC) RenderingWindow.cpp -c $(CFLAGS) $(OPENGL_LS) $(INC_DIR_GLM)
+
+Mesh.o: Mesh.cpp
+	$(CC) Mesh.cpp -c $(CFLAGS) $(OPENGL_LS) $(INC_DIR_GLM)
+
+BaseShader.o: BaseShader.cpp
+	$(CC) BaseShader.cpp -c $(CFLAGS) $(OPENGL_LS) $(INC_DIR_GLM)
+
+BaseCamera.o: BaseCamera.cpp
+	$(CC) BaseCamera.cpp -c $(CFLAGS) $(OPENGL_LS) $(INC_DIR_GLM)
 	
 clean:
 	rm -r *.o

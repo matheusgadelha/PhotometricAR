@@ -282,6 +282,9 @@ namespace tracking
 				cv::Mat color_pattern;
 				cv::resize(this->pattern.image_color, color_pattern, cv::Size(0,0), 0.5, 0.5);	
 
+				int g_size = 35;
+				cv::GaussianBlur(this->warpedPattern, this->warpedPattern, cv::Size(g_size,g_size), 4 );
+				cv::GaussianBlur(color_pattern, color_pattern, cv::Size(g_size,g_size), 4 );
 				// Illumination image
 				cv::Mat illu_diff = this->warpedPattern - color_pattern;
 				// Erodes image to reduce noise
@@ -297,13 +300,14 @@ namespace tracking
 				// Light map image
 				cv::Mat light_map;
 				light_map.convertTo(light_map, CV_32FC3);
-				color_pattern.convertTo(color_pattern, CV_32FC3);
-				this->warpedPattern.convertTo(this->warpedPattern, CV_32FC3);
-				// cv::subtract( color_pattern, cv::Scalar(30, 30, 30), color_pattern);
+				// color_pattern.convertTo(color_pattern, CV_32FC3);
+				// this->warpedPattern.convertTo(this->warpedPattern, CV_32FC3);
+				// cv::multiply( color_pattern, cv::Scalar(0.5, 0.5, 0.5), color_pattern);
 				cv::divide(this->warpedPattern, color_pattern, light_map);
 				// light_map *= 255;
-				cv::normalize(light_map, light_map, 0, 1, cv::NORM_MINMAX);
-				cv::multiply(light_map, cv::Scalar(100,100,100), light_map);
+				// cv::normalize(light_map, light_map, 0, 1, cv::NORM_MINMAX);
+				cv::min(light_map, 1.0, light_map);
+				cv::multiply(light_map, cv::Scalar(255,255,255), light_map);
 				// cv::multiply(light_map, color_pattern, light_map);
 				// light_map.convertTo(light_map, CV_8UC3);
 				cv::blur( light_map, light_map, cv::Size(15,15));

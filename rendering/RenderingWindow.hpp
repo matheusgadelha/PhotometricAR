@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "BaseShader.hpp"
 
 namespace rendering
 {
@@ -19,14 +20,19 @@ namespace rendering
 		public:
 			RenderingWindow( std::string, int, int );
 
-			void render();
-			void reshape( int v, int w );
-			void start( int argc, char* argv[] );
+			virtual void render();
+			virtual void reshape( int v, int w );
+			virtual void start( int argc, char* argv[] );
+			virtual void keyboard( unsigned char k, int x, int y );
 
-		private:
+		// TODO: Change necessary attributes to private fields and create accessors.
+		protected:
+
+			BaseShader shader;
 
 			static void renderWrapper();
 			static void reshapeWrapper( int v, int w );
+			static void keyboardWrapper( unsigned char k, int x, int y );
 
 			static RenderingWindow* instance;
 

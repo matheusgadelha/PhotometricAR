@@ -16,12 +16,12 @@ OPENGL_LS = -lGL -lGLEW -lglut
 
 LS = -ltrack -lrender
 
-INCLUDES = -I../tracking -I../rendering	
+INCLUDES = -I../tracking -I../rendering	-I../glm
 
 all: tst-track.cpp tst-render.cpp
 	$(CC) tst-track.cpp -o tst-track $(CFLAGS) $(LIB_DIR) $(LS) $(OPENCV) $(INCLUDES) 
 	mv tst-track ../bin/
-	$(CC) tst-render.cpp -o tst-render $(CFLAGS) $(LIB_DIR) $(LS) $(OPENGL_LS) $(INCLUDES) 
+	$(CC) tst-render.cpp -o tst-render $(CFLAGS) $(LIB_DIR) $(LS) $(OPENCV) $(OPENGL_LS) $(INCLUDES) 
 	mv tst-render ../bin/
 	
 clean:
