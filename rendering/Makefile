@@ -14,10 +14,16 @@ INC_DIR_GLM = -I../glm
 
 # OPENCV = $(OPENCV_LS) $(OPENCV_INCLUDES)
 
-all: RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o 
-	ar rvs librender.a RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o
+all: RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o  RenderableObject.o RenderingManager.o
+	ar rvs librender.a RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o RenderableObject.o RenderingManager.o
 	ranlib librender.a
 	mv librender.a ../lib/
+
+RenderableObject.o: RenderableObject.cpp
+	$(CC) RenderableObject.cpp -c $(CFLAGS) $(OPENGL_LS) $(INC_DIR_GLM)
+
+RenderingManager.o: RenderingManager.cpp
+	$(CC) RenderingManager.cpp -c $(CFLAGS) $(OPENGL_LS) $(INC_DIR_GLM)
 
 RenderingWindow.o: RenderingWindow.cpp
 	$(CC) RenderingWindow.cpp -c $(CFLAGS) $(OPENGL_LS) $(INC_DIR_GLM)

@@ -5,7 +5,7 @@ namespace rendering
 	/**
 	 * Default constructor. Creates vertex array only.
 	 */
-	Mesh::Mesh()
+	Mesh::Mesh() : RenderableObject()
 	{
 	}
 

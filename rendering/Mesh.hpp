@@ -12,7 +12,7 @@
 #include <cstring>
 
 #include "BaseShader.hpp"
-#include "BaseCamera.hpp"
+#include "RenderableObject.hpp"
 
 #include "glm.hpp"
 #include "gtc/type_ptr.hpp"
@@ -22,7 +22,7 @@ using namespace glm;
 
 namespace rendering
 {
-	class Mesh
+	class Mesh : public RenderableObject
 	{
 		public:
 
@@ -30,7 +30,8 @@ namespace rendering
 			~Mesh();
 
 			void load( const char* _path, BaseShader& _shader);
-			void draw( BaseCamera& _camera);
+
+			virtual void draw( BaseCamera& _camera );
 
 		private:
 

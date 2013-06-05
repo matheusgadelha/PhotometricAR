@@ -6,6 +6,7 @@
 #include "RenderingWindow.hpp"
 #include "Mesh.hpp"
 #include "BaseCamera.hpp"
+#include "RenderingManager.hpp"
 
 #include "Tracker.hpp"
 #include "PatternDetector.hpp"
@@ -23,6 +24,7 @@ class IlluminationWindow : public RenderingWindow
 
 		IlluminationWindow() : RenderingWindow( "Illumination Test", 800, 600 )
 		{
+			manager = new RenderingManager( camera );
 		}
 
 		Mesh macaca;
@@ -35,17 +37,20 @@ class IlluminationWindow : public RenderingWindow
 		cv::VideoCapture* capture;
 		cv::Mat currentFrame;
 
+		RenderingManager* manager;
+
 		virtual void start( int argc, char* argv[]) 
 		{
 			RenderingWindow::start( argc, argv );
-
-			
 
 			shader.createCompleteShader( "shaders/simple.vert", "shaders/simple.frag" );
 			shader2.createCompleteShader( "shaders/alternate.vert", "shaders/alternate.frag" );
 						
 			macaca.load( "models/suzanne.obj", shader );
 			macaca2.load( "models/suzanne.obj", shader2 );
+
+			manager->add( macaca );
+			manager->add( macaca2 );
 
 			glutMainLoop();
 		}
@@ -75,8 +80,8 @@ class IlluminationWindow : public RenderingWindow
 
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 			glClear( GL_COLOR_BUFFER_BIT );
-			
-			macaca.draw( camera );
+			w
+			manager->render();
 
 			glutSwapBuffers();
 		}
