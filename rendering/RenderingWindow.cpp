@@ -50,7 +50,7 @@ namespace rendering
 		std::cout << "OpenGL major version = " << OpenGLVersion[0] << std::endl;
 		std::cout << "OpenGL minor version = " << OpenGLVersion[1] << std::endl << std::endl;
 		
-		// glutIdleFunc( this->renderWrapper );
+		glutIdleFunc( this->renderWrapper );
 		glutDisplayFunc( this->renderWrapper );
 		glutReshapeFunc( this->reshapeWrapper );
 		glutKeyboardFunc( this->keyboardWrapper );

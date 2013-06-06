@@ -34,11 +34,11 @@ namespace rendering
 
 		glGenBuffers( 1, &this->vertexBuffer );
 		glBindBuffer( GL_ARRAY_BUFFER, this->vertexBuffer );
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &this->vertices[0], GL_STATIC_DRAW);
+		glBufferData( GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &this->vertices[0], GL_STATIC_DRAW );
 
 		glGenBuffers( 1, &this->normalBuffer );
 		glBindBuffer( GL_ARRAY_BUFFER, this->normalBuffer );
-		glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &this->normals[0], GL_STATIC_DRAW);
+		glBufferData( GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &this->normals[0], GL_STATIC_DRAW );
 
 		glBindAttribLocation( this->programId, 0, "in_vertex" );
 		glBindAttribLocation( this->programId, 1, "in_normal" );

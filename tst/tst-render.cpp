@@ -5,6 +5,7 @@
 
 #include "RenderingWindow.hpp"
 #include "Mesh.hpp"
+#include "Sprite.hpp"
 #include "BaseCamera.hpp"
 #include "RenderingManager.hpp"
 
@@ -27,10 +28,12 @@ class IlluminationWindow : public RenderingWindow
 			manager = new RenderingManager( camera );
 		}
 
+		Sprite* sprite;
 		Mesh macaca;
 		Mesh macaca2;
 
 		BaseShader shader2;
+		BaseShader spriteShader;
 
 		BaseCamera camera;
 
@@ -45,12 +48,17 @@ class IlluminationWindow : public RenderingWindow
 
 			shader.createCompleteShader( "shaders/simple.vert", "shaders/simple.frag" );
 			shader2.createCompleteShader( "shaders/alternate.vert", "shaders/alternate.frag" );
+
+			spriteShader.createCompleteShader("shaders/Sprite.vert", "shaders/Sprite.frag");
+
+			sprite = new Sprite("data/emtec.jpg", spriteShader);
 						
 			macaca.load( "models/suzanne.obj", shader );
 			macaca2.load( "models/suzanne.obj", shader2 );
 
+			manager->add( *sprite );
 			manager->add( macaca );
-			manager->add( macaca2 );
+			// manager->add( macaca2 );
 
 			glutMainLoop();
 		}
@@ -80,7 +88,7 @@ class IlluminationWindow : public RenderingWindow
 
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 			glClear( GL_COLOR_BUFFER_BIT );
-			
+
 			manager->render();
 
 			glutSwapBuffers();
