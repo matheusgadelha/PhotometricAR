@@ -80,7 +80,7 @@ class IlluminationWindow : public RenderingWindow
 
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 			glClear( GL_COLOR_BUFFER_BIT );
-			w
+			
 			manager->render();
 
 			glutSwapBuffers();

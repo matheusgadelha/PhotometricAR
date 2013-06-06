@@ -2,7 +2,9 @@
 
 namespace rendering
 {
-
+	/**
+	 * Creates object and sets its active state.
+	 */
 	RenderableObject::RenderableObject()
 	{
 		isActive = true;
@@ -13,6 +15,11 @@ namespace rendering
 		isActive = false;
 	}
 
-	void RenderableObject::draw( BaseCamera& ){}
+	/**
+	 * Virtual method to draw objects
+	 * @param cam Camera containing object view config.
+	 */
+	void RenderableObject::draw( BaseCamera& cam )
+	{}
 
 }
