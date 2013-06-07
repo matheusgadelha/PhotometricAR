@@ -16,6 +16,11 @@ namespace tracking
 		return true;
 	}
 
+	const cv::Mat Tracker::getHomography()
+	{
+		return this->patternDetector.homography;
+	}
+
 
 
 }

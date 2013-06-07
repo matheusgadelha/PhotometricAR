@@ -15,12 +15,13 @@ namespace tracking
 		
 			Tracker( const cv::Mat& _pattern );
 			bool processFrame( cv::Mat& _input_frame );
-			const cv::Mat getHomography() const;
+			const cv::Mat getHomography();
+			// TODO: put this on private and refactor
+			PatternDetector patternDetector;
 			
 		private:
 			cv::Mat homography;
 			cv::Mat pattern;
-			PatternDetector patternDetector;
 	
 	};
 

@@ -12,6 +12,9 @@ namespace rendering{
 		this->up = vec3(0.0f, 1.0f, 0.0f);
 		this->lookAtDir = vec3(0.0f, 0.0f, 1.0f);
 		this->position = vec3(0.0f, 0.0f, 0.0f);
+
+		this->usingCustomViewMatrix = false;
+		// this->viewMatrix = mat4();
 	}
 
 	/**
@@ -21,7 +24,8 @@ namespace rendering{
 	 */
 	mat4 BaseCamera::getViewMatrix()
 	{
-		return lookAt(this->position, this->position+this->lookAtDir, this->up);
+		if( usingCustomViewMatrix ) return this->viewMatrix;
+		else return lookAt(this->position, this->position+this->lookAtDir, this->up);
 	}
 
 	/**
@@ -52,6 +56,15 @@ namespace rendering{
 	}
 
 	/**
+	 * Assigns a new view matrix to the camera
+	 * @param _view new view matrix
+	 */
+	void BaseCamera::setCustomViewMatrix( mat4 _view )
+	{
+		viewMatrix = _view;
+	}
+
+	/**
 	 * Method to rotate camera
 	 * @param angle rotation angle
 	 * @param axis  rotation axis
@@ -74,7 +87,8 @@ namespace rendering{
 	 */
 	mat4 BaseCamera::getProjectionMatrix()
 	{
-		return this->projectionMatrix;
+		// return this->projectionMatrix;
+		return mat4();
 	}
 
 	/**

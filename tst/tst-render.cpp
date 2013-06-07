@@ -14,6 +14,7 @@
 #include "MultiSampledDetector.hpp"
 
 using namespace rendering;
+using namespace tracking;
 using namespace glm;
 using std::vector;
 
@@ -37,8 +38,13 @@ class IlluminationWindow : public RenderingWindow
 
 		BaseCamera camera;
 
-		cv::VideoCapture* capture;
+		cv::VideoCapture * capture;
 		cv::Mat currentFrame;
+
+		Tracker * tracker;
+		cv::Mat patternImg;
+
+		mat4 view;
 
 		RenderingManager* manager;
 
@@ -46,10 +52,14 @@ class IlluminationWindow : public RenderingWindow
 		{
 			RenderingWindow::start( argc, argv );
 
+			camera.usingCustomViewMatrix = true;
+
 			shader.createCompleteShader( "shaders/simple.vert", "shaders/simple.frag" );
 			shader2.createCompleteShader( "shaders/alternate.vert", "shaders/alternate.frag" );
 
 			spriteShader.createCompleteShader("shaders/Sprite.vert", "shaders/Sprite.frag");
+
+			capture = new cv::VideoCapture(0);
 
 			sprite = new Sprite("data/algebra.jpg", spriteShader);
 						
@@ -58,6 +68,10 @@ class IlluminationWindow : public RenderingWindow
 
 			manager->add( *sprite );
 			manager->add( macaca );
+
+			patternImg = cv::imread( "data/emtec.jpg");
+			tracker = new Tracker( patternImg );
+
 			// manager->add( macaca2 );
 
 			glutMainLoop();
@@ -81,6 +95,51 @@ class IlluminationWindow : public RenderingWindow
 			{
 				camera.goFront( 0.1f );
 			}
+		}
+
+		virtual void idle()
+		{
+			(*capture) >> currentFrame;
+			tracker->processFrame( currentFrame );
+
+			if( tracker->patternDetector.patternFound )
+			{
+				camera.setCustomViewMatrix( computeViewMat() );
+			}
+
+			sprite->updateTextureData( currentFrame );
+			this->render();
+		}
+
+		mat4 computeViewMat()
+		{
+			mat4 result;
+
+			cv::Mat pose;
+			tracker->patternDetector.cameraPoseFromHomography(
+				tracker->getHomography(),
+				pose
+			);
+
+			for( unsigned i=0; i<3; ++i )
+			{
+				for( unsigned j=0; j<4; ++j )
+				{
+					result[i][j] = pose.at<float>(i,j);
+				}
+			}
+
+			for( unsigned i=0; i<4; ++i )
+			{
+				for( unsigned j=0; j<4; ++j )
+				{
+					std::cout << result[i][j] << " ";
+				}
+			}
+
+			
+
+			return result;
 		}
 
 		virtual void render()

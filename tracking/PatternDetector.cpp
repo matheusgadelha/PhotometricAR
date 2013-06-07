@@ -398,8 +398,8 @@ namespace tracking
 	/**
 	 * Computes features on a frame
 	 * 
-	 * @param _frame a frame where will extract keypoints and their descriptors
-	 * @param _key_points a set of keypoints that will receive the _frame detect points
+	 * @param _frame a frame where will be extracted keypoints and their descriptors
+	 * @param _key_points a set of keypoints that will receive the _frame detected points
 	 * @param _descriptors a set of descriptor that will receive the _frame computed descriptors
 	 * @return true if enough keypoints are found. false otherwise.
 	 */
@@ -759,6 +759,75 @@ namespace tracking
 		return true;
 		
 	}
+
+	void PatternDetector::cameraPoseFromHomography(const cv::Mat& H, cv::Mat& pose)
+	{
+
+		cv::Mat intrinsic_camera = cv::Mat::eye(3,3, CV_32FC1);
+		// TODO: put camera calibration values
+		intrinsic_camera.at<float>(0,0) = 1.0f;//526.58037684199849f;
+		intrinsic_camera.at<float>(1,1) = 1.0f;//524.65577209994706f;
+		intrinsic_camera.at<float>(0,2) = 0;//318.41744018680112f;
+		intrinsic_camera.at<float>(1,2) = 0;//202.96659047014398f;
+		intrinsic_camera.at<float>(2,2) = 1.0f;
+
+		std::vector<cv::Point2f> pattern_corners;
+    	cv::perspectiveTransform( this->pattern.points2d, pattern_corners, H );
+
+    	cv::Mat r, t;
+
+    	cv::solvePnP(
+    		this->pattern.points3d,
+    		pattern_corners,
+    		intrinsic_camera,
+    		cv::Mat(),
+    		r, t
+    	);
+
+    	pose = cv::Mat::eye(3, 4, CV_32FC1);
+
+    	cv::Mat rotation;
+    	cv::Rodrigues( r, rotation );
+
+    	cv::transpose(rotation, rotation);
+    	t = -t;
+
+    	for( unsigned i=0; i<rotation.rows; ++i )
+		{
+			for( unsigned j=0; j<rotation.cols; ++j )
+			{
+				pose.at<float>(i,j) = rotation.at<float>(i,j);
+			}
+			std::cout << std::endl;
+		}
+
+		for( unsigned i=0; i<t.rows; ++i )
+		{
+			pose.at<float>(i,3) = t.at<float>(i,0);
+		}
+
+    	// printMatrix( rotation );
+    	printMatrix( pose );
+	}
+
+	void PatternDetector::printMatrix( cv::Mat& m )
+	{
+		for( unsigned i=0; i<m.rows; ++i )
+		{
+			for( unsigned j=0; j<m.cols; ++j )
+			{
+				std::cout << m.at<float>(i,j) << " ";
+			}
+			std::cout << std::endl;
+		}
+		std::cout << "---\n";
+
+	}
+
+	// cv::Mat createCalibrationMatrix( float _fx, float _fy, float _cx, float _cy )
+	// {
+
+	// }
 
 }
 

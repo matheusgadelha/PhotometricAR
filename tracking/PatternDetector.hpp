@@ -39,8 +39,12 @@ namespace tracking
 			void disableHomographyMatching();
 			void setHomographyReprojThreshold( float );
 
-			//FOR DEBUG PURPOSES
-//			cv::Mat camImg;
+			cv::Mat computeViewMatrix();
+
+			void cameraPoseFromHomography(const cv::Mat& H, cv::Mat& pose);
+
+			bool patternFound;
+			cv::Mat homography;
 
 		protected:
 			Pattern pattern;
@@ -62,14 +66,10 @@ namespace tracking
 			std::vector<cv::Point2f>  rawFrameKeyPoints;
 			std::vector<cv::Point2f>  rawPatternKeyPoints;
 			
-			cv::Mat homography;
-			
 			bool ratioTestFlag;
 			bool homographyMatchingFlag;
 			
 			float homographyReprojThreshold;
-			
-			bool patternFound;
 			
 			float homographyAcceptanceThreshold;
 			float maxFlowError;
@@ -126,7 +126,8 @@ namespace tracking
 			void removePoorMatches( float _t, std::vector<cv::DMatch>& _matches );
 
 			bool isGoodHomography( cv::Mat& h );
-	
+
+			void printMatrix( cv::Mat& m );	
 	};
 
 }

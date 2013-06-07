@@ -28,6 +28,8 @@ namespace rendering
 			mat4 getProjectionMatrix();
 			mat4 getViewProjectionMatrix();
 
+			void setCustomViewMatrix( mat4 _view );
+
 			void setPerspectiveProjection(
 				float _fovy = 45.0f,
 				float _aspect = 4/3.0f,
@@ -49,10 +51,13 @@ namespace rendering
 			void goFront( float _step );
 			void goBack( float _step );
 
+			bool usingCustomViewMatrix;
+
 		protected:
 
 			// mat4 viewMatrix;
 			mat4 projectionMatrix;
+			mat4 viewMatrix;
 
 			vec3 position;
 			vec3 up;

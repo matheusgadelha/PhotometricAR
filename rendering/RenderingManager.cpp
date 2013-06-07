@@ -12,6 +12,8 @@ namespace rendering
 	 */
 	void RenderingManager::render()
 	{
+		// std::cout << camera->usingCustomViewMatrix << std::endl;
+		
 		for( unsigned i=0; i < objects.size(); ++i)
 		{
 			if( objects[i]->isActive )
