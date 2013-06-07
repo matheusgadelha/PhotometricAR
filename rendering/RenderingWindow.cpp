@@ -13,6 +13,11 @@ namespace rendering
 		instance = this;
 	}
 
+	/**
+	 * Starts rendering window
+	 * @param argc Terminal arg value
+	 * @param argv Terminal arg value
+	 */
 	void RenderingWindow::start( int argc, char* argv[] )
 	{
 		glutInit( &argc, argv );
@@ -50,7 +55,7 @@ namespace rendering
 		std::cout << "OpenGL major version = " << OpenGLVersion[0] << std::endl;
 		std::cout << "OpenGL minor version = " << OpenGLVersion[1] << std::endl << std::endl;
 		
-		glutIdleFunc( this->renderWrapper );
+		glutIdleFunc( this->idleWrapper );
 		glutDisplayFunc( this->renderWrapper );
 		glutReshapeFunc( this->reshapeWrapper );
 		glutKeyboardFunc( this->keyboardWrapper );
@@ -58,6 +63,17 @@ namespace rendering
         glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 	}
 
+	/**
+	 * Default method to execute on window is on an idle state.
+	 */
+	void RenderingWindow::idle()
+	{
+		
+	}
+
+	/**
+	 * Default method for rendering
+	 */
 	void RenderingWindow::render()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -65,6 +81,12 @@ namespace rendering
 		glutSwapBuffers();
 	}
 
+	/**
+	 * Default method for keyboard event handling
+	 * @param k Key description
+	 * @param x Modifier value
+	 * @param y Modifier value
+	 */
 	void RenderingWindow::keyboard( unsigned char k, int x, int y )
 	{
 		if( k==27 )
@@ -73,24 +95,46 @@ namespace rendering
 		}
 	}
 
+	/**
+	 * Method to change window size
+	 * @param _width  New window width
+	 * @param _height New window height
+	 */
 	void RenderingWindow::reshape( int _width, int _height )
 	{
 		glViewport( 0, 0, _width, _height );
 	}
 
+	/**
+	 * Wrapper method used to call overrided methods in an OO fashion
+	 */
 	void RenderingWindow::renderWrapper()
 	{
 		instance->render();
 		glFlush();
 	}
 
+	/**
+	 * Wrapper method used to call overrided methods in an OO fashion
+	 */
 	void RenderingWindow::reshapeWrapper( int _width, int _height )
 	{
 		instance->reshape( _width, _height );
 	}
 
+	/**
+	 * Wrapper method used to call overrided methods in an OO fashion
+	 */
 	void RenderingWindow::keyboardWrapper( unsigned char k, int x, int y )
 	{
 		instance->keyboard( k, x, y );
+	}
+
+	/**
+	 * Wrapper method used to call overrided methods in an OO fashion
+	 */
+	void RenderingWindow::idleWrapper()
+	{
+		instance->idle();
 	}
 }

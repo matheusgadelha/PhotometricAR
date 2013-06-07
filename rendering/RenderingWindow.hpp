@@ -24,6 +24,7 @@ namespace rendering
 			virtual void reshape( int v, int w );
 			virtual void start( int argc, char* argv[] );
 			virtual void keyboard( unsigned char k, int x, int y );
+			virtual void idle();
 
 		// TODO: Change necessary attributes to private fields and create accessors.
 		protected:
@@ -31,6 +32,7 @@ namespace rendering
 			BaseShader shader;
 
 			static void renderWrapper();
+			static void idleWrapper();
 			static void reshapeWrapper( int v, int w );
 			static void keyboardWrapper( unsigned char k, int x, int y );
 
