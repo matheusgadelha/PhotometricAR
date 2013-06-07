@@ -51,7 +51,7 @@ class IlluminationWindow : public RenderingWindow
 
 			spriteShader.createCompleteShader("shaders/Sprite.vert", "shaders/Sprite.frag");
 
-			sprite = new Sprite("data/emtec.jpg", spriteShader);
+			sprite = new Sprite("data/algebra.jpg", spriteShader);
 						
 			macaca.load( "models/suzanne.obj", shader );
 			macaca2.load( "models/suzanne.obj", shader2 );
@@ -111,21 +111,6 @@ int main( int argc, char* argv[] )
 	const char* windowName = "Augmented Scene";
 	RenderingWindow* window = new IlluminationWindow();
 	window->start( argc, argv );
-	// cv::VideoCapture capture(0);
-	// cv::Mat currentFrame;
-
-	// cv::namedWindow( windowName, CV_WINDOW_OPENGL );
-	// cv::resizeWindow( windowName, 640, 480 );
-	// cv::setOpenGlContext( windowName );
-	// cv::setOpenGlDrawCallback( windowName, renderGL );
-
-	// shader.createCompleteShader( "shaders/simple.vert", "shaders/simple.frag" );
-	// // macaca.load( "models/suzanne.obj", shader );
-
-	// while(true)
-	// {
-	// 	cv::updateWindow(windowName);
-	// }
 
 	return 0;
 }
