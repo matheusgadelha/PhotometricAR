@@ -9,6 +9,7 @@
 #include "Helper.hpp" //getGray
 #include "Pattern.hpp" //Pattern
 #include "opencv2/opencv.hpp"
+#include "CameraCalibration.hpp"
 
 namespace tracking
 {
@@ -41,7 +42,7 @@ namespace tracking
 
 			cv::Mat computeViewMatrix();
 
-			void cameraPoseFromHomography(const cv::Mat& H, cv::Mat& pose);
+			void cameraPoseFromHomography(const cv::Mat& H, cv::Mat& pose, CameraCalibration& cal);
 
 			bool patternFound;
 			cv::Mat homography;

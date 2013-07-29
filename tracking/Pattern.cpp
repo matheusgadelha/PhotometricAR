@@ -10,16 +10,23 @@ namespace tracking
 		
 		float w = this->image.cols;
 		float h = this->image.rows;
+
+		this->points2d.resize(4);
+		this->points3d.resize(4);
 		
-		this->points2d.push_back( cv::Point2f( 0, 0 ));
-		this->points2d.push_back( cv::Point2f( w, 0 ));
-		this->points2d.push_back( cv::Point2f( 0, h ));
-		this->points2d.push_back( cv::Point2f( w, h ));
-		
-		this->points3d.push_back( cv::Point3f( 0, 0, 0 ));
-		this->points3d.push_back( cv::Point3f( w, 0, 0 ));
-		this->points3d.push_back( cv::Point3f( 0, h, 0 ));
-		this->points3d.push_back( cv::Point3f( w, h, 0 ));
+		const float maxSize = std::max(w,h);
+	    const float unitW = w / maxSize;
+	    const float unitH = h / maxSize;
+
+	    this->points2d[0] = cv::Point2f(0,0);
+	    this->points2d[1] = cv::Point2f(w,0);
+	    this->points2d[2] = cv::Point2f(0,h);
+	    this->points2d[3] = cv::Point2f(w,h);
+
+	    this->points3d[0] = cv::Point3f(-unitW, -unitH, 0);
+	    this->points3d[1] = cv::Point3f( unitW, -unitH, 0);
+	    this->points3d[2] = cv::Point3f(-unitW,  unitH, 0);
+	    this->points3d[3] = cv::Point3f( unitW,  unitH, 0);
 	}
 	
 	cv::Size Pattern::getSize()

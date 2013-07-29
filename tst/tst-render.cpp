@@ -25,6 +25,12 @@ class IlluminationWindow : public RenderingWindow
 	public:
 
 		IlluminationWindow() : RenderingWindow( "Illumination Test", 800, 600 )
+		, calibration(
+			7.7629785490292102e+02,
+			7.7089386791151753e+02,
+			2.9624412505877865e+02,
+			2.0158242775595554e+02
+		)
 		{
 			manager = new RenderingManager( camera );
 		}
@@ -44,6 +50,8 @@ class IlluminationWindow : public RenderingWindow
 		Tracker * tracker;
 		cv::Mat patternImg;
 
+		CameraCalibration calibration;
+
 		mat4 view;
 
 		RenderingManager* manager;
@@ -52,7 +60,9 @@ class IlluminationWindow : public RenderingWindow
 		{
 			RenderingWindow::start( argc, argv );
 
-			camera.usingCustomViewMatrix = true;
+			camera.usingCustomViewMatrix = false;
+			camera.setProjectionMatrix(
+				calibration.getProjectionMatrix(800,600) );
 
 			shader.createCompleteShader( "shaders/simple.vert", "shaders/simple.frag" );
 			shader2.createCompleteShader( "shaders/alternate.vert", "shaders/alternate.frag" );
@@ -118,7 +128,8 @@ class IlluminationWindow : public RenderingWindow
 			cv::Mat pose;
 			tracker->patternDetector.cameraPoseFromHomography(
 				tracker->getHomography(),
-				pose
+				pose,
+				calibration
 			);
 
 			for( unsigned i=0; i<3; ++i )
@@ -136,9 +147,7 @@ class IlluminationWindow : public RenderingWindow
 					std::cout << result[i][j] << " ";
 				}
 			}
-
 			
-
 			return result;
 		}
 

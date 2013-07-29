@@ -48,6 +48,8 @@ namespace rendering
 		projectionMatLoc = glGetUniformLocation( this->programId, "projection" );
 		viewMatLoc = glGetUniformLocation( this->programId, "view" );
 		modelMatLoc = glGetUniformLocation( this->programId, "model" );
+
+		this->modelMatrix = scale(mat4(), vec3(0.012f));
 	}
 
 	/**

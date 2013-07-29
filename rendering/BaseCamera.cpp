@@ -25,7 +25,16 @@ namespace rendering{
 	mat4 BaseCamera::getViewMatrix()
 	{
 		if( usingCustomViewMatrix ) return this->viewMatrix;
-		else return lookAt(this->position, this->position+this->lookAtDir, this->up);
+		return lookAt(this->position, this->position+this->lookAtDir, this->up);
+	}
+
+	/**
+	 * Sets custom camera projection matrix
+	 * @param _proj New projection matrix
+	 */
+	void BaseCamera::setProjectionMatrix( mat4 _proj )
+	{
+		this->projectionMatrix = _proj;
 	}
 
 	/**
@@ -87,8 +96,8 @@ namespace rendering{
 	 */
 	mat4 BaseCamera::getProjectionMatrix()
 	{
-		// return this->projectionMatrix;
-		return mat4();
+		return this->projectionMatrix;
+		// return mat4();
 	}
 
 	/**

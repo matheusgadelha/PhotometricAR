@@ -30,6 +30,8 @@ namespace rendering
 
 			void setCustomViewMatrix( mat4 _view );
 
+			void setProjectionMatrix( mat4 _proj );
+
 			void setPerspectiveProjection(
 				float _fovy = 45.0f,
 				float _aspect = 4/3.0f,

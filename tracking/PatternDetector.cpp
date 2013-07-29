@@ -760,20 +760,17 @@ namespace tracking
 		
 	}
 
-	void PatternDetector::cameraPoseFromHomography(const cv::Mat& H, cv::Mat& pose)
+	void PatternDetector::cameraPoseFromHomography(const cv::Mat& H, cv::Mat& pose, CameraCalibration& cal)
 	{
 
 		cv::Mat intrinsic_camera = cv::Mat::eye(3,3, CV_32FC1);
-		// TODO: put camera calibration values
-		intrinsic_camera.at<float>(0,0) = 1.0f;//526.58037684199849f;
-		intrinsic_camera.at<float>(1,1) = 1.0f;//524.65577209994706f;
-		intrinsic_camera.at<float>(0,2) = 0;//318.41744018680112f;
-		intrinsic_camera.at<float>(1,2) = 0;//202.96659047014398f;
-		intrinsic_camera.at<float>(2,2) = 1.0f;
+		intrinsic_camera = cal.getIntrinsicMatrix();
 
 		std::vector<cv::Point2f> pattern_corners;
     	cv::perspectiveTransform( this->pattern.points2d, pattern_corners, H );
 
+    	cv::Mat rVec;
+    	cv::Mat_<float> tVec;
     	cv::Mat r, t;
 
     	cv::solvePnP(
@@ -784,13 +781,16 @@ namespace tracking
     		r, t
     	);
 
+    	r.convertTo(rVec, CV_32F);
+  		t.convertTo(tVec ,CV_32F);
+
     	pose = cv::Mat::eye(3, 4, CV_32FC1);
 
-    	cv::Mat rotation;
-    	cv::Rodrigues( r, rotation );
+    	cv::Mat_<float> rotation(3,3);
+    	cv::Rodrigues( rVec, rotation );
 
     	cv::transpose(rotation, rotation);
-    	t = -t;
+    	tVec = -tVec;
 
     	for( unsigned i=0; i<rotation.rows; ++i )
 		{
@@ -803,7 +803,7 @@ namespace tracking
 
 		for( unsigned i=0; i<t.rows; ++i )
 		{
-			pose.at<float>(i,3) = t.at<float>(i,0);
+			pose.at<float>(i,3) = tVec.at<float>(i,0);
 		}
 
     	// printMatrix( rotation );
