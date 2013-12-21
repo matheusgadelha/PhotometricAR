@@ -30,6 +30,7 @@ namespace rendering
         glutCreateWindow( this->windowName.c_str() );
 
         glEnable(GL_BLEND);
+        glEnable( GL_DEPTH_TEST );
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         int OpenGLVersion[2];

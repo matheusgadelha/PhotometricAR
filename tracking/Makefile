@@ -2,6 +2,8 @@ CC = g++
 
 CFLAGS = -Wall -msse4.2 -O3
 
+OPENGL_LS = -lGL -lGLEW -lglut
+
 INC_DIR_GLM = -I../glm
 
 OPENCV_LS = -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video
@@ -12,28 +14,28 @@ OPENCV_SO = /usr/local/lib/libopencv_calib3d.so /usr/local/lib/libopencv_contrib
 
 OPENCV = $(OPENCV_LS) $(OPENCV_INCLUDES)
 
-all: Tracker.o Pattern.o Helper.o PatternDetector.o MultiSampledDetector.o CameraCalibration.o
-	ar rvs libtrack.a Tracker.o Pattern.o Helper.o PatternDetector.o MultiSampledDetector.o CameraCalibration.o
+all: ARDrawingContext.o Pattern.o ARPipeline.o PatternDetector.o GeometryTypes.o CameraCalibration.o
+	ar rvs libtrack.a ARDrawingContext.o Pattern.o ARPipeline.o PatternDetector.o GeometryTypes.o CameraCalibration.o
 	ranlib libtrack.a
 	mv libtrack.a ../lib/
 
 CameraCalibration.o: CameraCalibration.cpp
-	$(CC) CameraCalibration.cpp -c $(CFLAGS) $(OPENCV) $(INC_DIR_GLM)
+	$(CC) CameraCalibration.cpp -c $(CFLAGS) $(OPENGL_LS) $(OPENCV) $(INC_DIR_GLM)
 
-Tracker.o: Tracker.cpp
-	$(CC) Tracker.cpp -c $(CFLAGS) $(OPENCV) $(INC_DIR_GLM)
+ARDrawingContext.o: ARDrawingContext.cpp
+	$(CC) ARDrawingContext.cpp -c $(CFLAGS) $(OPENGL_LS) $(OPENCV) $(INC_DIR_GLM)
 	
 Pattern.o: Pattern.cpp
-	$(CC) Pattern.cpp -c $(CFLAGS) $(OPENCV) $(INC_DIR_GLM)
+	$(CC) Pattern.cpp -c $(CFLAGS) $(OPENGL_LS) $(OPENCV) $(INC_DIR_GLM)
 	
-Helper.o: Helper.cpp
-	$(CC) Helper.cpp -c $(CFLAGS) $(OPENCV) $(INC_DIR_GLM)
+ARPipeline.o: ARPipeline.cpp
+	$(CC) ARPipeline.cpp -c $(CFLAGS) $(OPENGL_LS) $(OPENCV) $(INC_DIR_GLM)
 	
 PatternDetector.o: PatternDetector.cpp
-	$(CC) PatternDetector.cpp -c $(CFLAGS) $(OPENCV) $(INC_DIR_GLM)
+	$(CC) PatternDetector.cpp -c $(CFLAGS) $(OPENGL_LS) $(OPENCV) $(INC_DIR_GLM)
 
-MultiSampledDetector.o: MultiSampledDetector.cpp
-	$(CC) MultiSampledDetector.cpp -c $(CFLAGS) $(OPENCV) $(INC_DIR_GLM)
+GeometryTypes.o: GeometryTypes.cpp
+	$(CC) GeometryTypes.cpp -c $(CFLAGS) $(OPENGL_LS) $(OPENCV) $(INC_DIR_GLM)
 	
 clean:
 	rm -r *.o

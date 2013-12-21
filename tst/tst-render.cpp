@@ -18,6 +18,7 @@ using namespace tracking;
 using namespace glm;
 using std::vector;
 
+#define DEBUG_MODE
 #define BUFFER_OFFSET(i) ((void*)(i))
 
 class IlluminationWindow : public RenderingWindow
@@ -53,6 +54,7 @@ class IlluminationWindow : public RenderingWindow
 		CameraCalibration calibration;
 
 		mat4 view;
+		mat4 projection;
 
 		RenderingManager* manager;
 
@@ -60,9 +62,7 @@ class IlluminationWindow : public RenderingWindow
 		{
 			RenderingWindow::start( argc, argv );
 
-			camera.usingCustomViewMatrix = false;
-			camera.setProjectionMatrix(
-				calibration.getProjectionMatrix(800,600) );
+			camera.usingCustomViewMatrix = true;
 
 			shader.createCompleteShader( "shaders/simple.vert", "shaders/simple.frag" );
 			shader2.createCompleteShader( "shaders/alternate.vert", "shaders/alternate.frag" );
@@ -70,6 +70,7 @@ class IlluminationWindow : public RenderingWindow
 			spriteShader.createCompleteShader("shaders/Sprite.vert", "shaders/Sprite.frag");
 
 			capture = new cv::VideoCapture(0);
+			camera.setProjectionMatrix( mat4() );
 
 			sprite = new Sprite("data/algebra.jpg", spriteShader);
 						
@@ -87,30 +88,13 @@ class IlluminationWindow : public RenderingWindow
 			glutMainLoop();
 		}
 
-		virtual void keyboard( unsigned char k, int x, int y )
-		{
-			if( k=='a')
-			{
-				camera.rotate( 1.0f, vec3(0.0f, 1.0f, 0.0f));
-			}
-			if( k=='d')
-			{
-				camera.rotate( -1.0f, vec3(0.0f, 1.0f, 0.0f));
-			}
-			if( k=='s')
-			{
-				camera.goBack( 0.1f );
-			}
-			if( k=='w')
-			{
-				camera.goFront( 0.1f );
-			}
-		}
+		// 
 
 		virtual void idle()
 		{
 			(*capture) >> currentFrame;
 			tracker->processFrame( currentFrame );
+			rotate( macaca.modelMatrix, 0.5f, vec3(0.0,1.0,0.0f));
 
 			if( tracker->patternDetector.patternFound )
 			{
@@ -136,16 +120,18 @@ class IlluminationWindow : public RenderingWindow
 			{
 				for( unsigned j=0; j<4; ++j )
 				{
-					result[i][j] = pose.at<float>(i,j);
+					result[i][j] = pose.at<float>(j,i);
 				}
 			}
 
+			std::cout << "RESULT MATRIX\n";
 			for( unsigned i=0; i<4; ++i )
 			{
 				for( unsigned j=0; j<4; ++j )
 				{
 					std::cout << result[i][j] << " ";
 				}
+				std::cout << std::endl;
 			}
 			
 			return result;
@@ -155,8 +141,8 @@ class IlluminationWindow : public RenderingWindow
 		{
 
 			glClearColor(0.0, 0.0, 0.0, 1.0);
-			glClear( GL_COLOR_BUFFER_BIT );
-
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			
 			manager->render();
 
 			glutSwapBuffers();

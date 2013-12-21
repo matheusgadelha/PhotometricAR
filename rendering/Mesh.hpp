@@ -34,6 +34,8 @@ namespace rendering
 
 			virtual void draw( BaseCamera& _camera );
 
+			mat4 modelMatrix;
+
 		private:
 
 			bool loadOBJ(
@@ -50,14 +52,13 @@ namespace rendering
 			GLint vertexAttribute;
 			GLint normalAttribute;
 
-			mat4 modelMatrix;
-
 			GLuint vertexBuffer;
 			GLuint normalBuffer;
 			GLuint vaoIdx;
 			GLuint projectionMatLoc;
 			GLuint viewMatLoc;
 			GLuint modelMatLoc;
+			GLuint normalMatLoc;
 			GLuint programId;
 
 

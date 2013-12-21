@@ -48,8 +48,10 @@ namespace rendering
 		projectionMatLoc = glGetUniformLocation( this->programId, "projection" );
 		viewMatLoc = glGetUniformLocation( this->programId, "view" );
 		modelMatLoc = glGetUniformLocation( this->programId, "model" );
+		normalMatLoc = glGetUniformLocation( this->programId, "normal_matrix" );
 
-		this->modelMatrix = scale(mat4(), vec3(0.012f));
+		// this->modelMatrix = scale(mat4(), vec3(0.1f));
+		this->modelMatrix = mat4();
 	}
 
 	/**
@@ -58,6 +60,8 @@ namespace rendering
 	 */
 	void Mesh::draw( BaseCamera& _camera )
 	{
+		mat4 normalMat = transpose( _camera.getViewMatrix() * this->modelMatrix );
+
 		glUseProgram( this->programId );
 
 		this->vertexAttribute = 0;
@@ -79,6 +83,12 @@ namespace rendering
 			this->modelMatLoc,
 			1, GL_FALSE,
 			value_ptr( this->modelMatrix )
+		);
+
+		glUniformMatrix4fv(
+			this->normalMatLoc,
+			1, GL_FALSE,
+			value_ptr( normalMat )
 		);
 
 		glEnableVertexAttribArray( this->vertexAttribute );
@@ -103,6 +113,7 @@ namespace rendering
 			(void*)0                          // array buffer offset
 		);
 
+		cout << vertices.size();
 		glDrawArrays(GL_TRIANGLES, 0, this->vertices.size() );
 
 		glDisableVertexAttribArray( this->vertexAttribute );

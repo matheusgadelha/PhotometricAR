@@ -54,11 +54,13 @@ namespace rendering
 			void goBack( float _step );
 
 			bool usingCustomViewMatrix;
+			bool usingCustomProjectionMatrix;
+
+			mat4 projectionMatrix;
 
 		protected:
 
 			// mat4 viewMatrix;
-			mat4 projectionMatrix;
 			mat4 viewMatrix;
 
 			vec3 position;

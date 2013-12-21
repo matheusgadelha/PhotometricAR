@@ -13,7 +13,8 @@ namespace rendering{
 		this->lookAtDir = vec3(0.0f, 0.0f, 1.0f);
 		this->position = vec3(0.0f, 0.0f, 0.0f);
 
-		this->usingCustomViewMatrix = false;
+		this->usingCustomViewMatrix = true;
+		this->usingCustomProjectionMatrix = true;
 		// this->viewMatrix = mat4();
 	}
 

@@ -180,6 +180,6 @@ namespace rendering
 		glDisableVertexAttribArray( this->vertexAttribute );
 		glDisableVertexAttribArray( this->uvAttribute );
 
+		glClear( GL_DEPTH_BUFFER_BIT );
 	}
-
 }
