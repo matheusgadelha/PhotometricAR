@@ -1,6 +1,6 @@
 CC = g++
 
-CFLAGS = -Wall -msse4.2 -O3
+CFLAGS = -Wall -ggdb
 
 OPENGL_LS = -lGL -lGLEW -lglut
 

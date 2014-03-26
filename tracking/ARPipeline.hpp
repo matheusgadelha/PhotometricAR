@@ -1,14 +1,3 @@
-/*****************************************************************************
-*   Markerless AR desktop application.
-******************************************************************************
-*   by Khvedchenia Ievgen, 5th Dec 2012
-*   http://computer-vision-talks.com
-******************************************************************************
-*   Ch3 of the book "Mastering OpenCV with Practical Computer Vision Projects"
-*   Copyright Packt Publishing 2012.
-*   http://www.packtpub.com/cool-projects-with-opencv/book
-*****************************************************************************/
-
 #ifndef ARPIPELINE_HPP
 #define ARPIPELINE_HPP
 
@@ -18,23 +7,48 @@
 #include "CameraCalibration.hpp"
 #include "GeometryTypes.hpp"
 
-class ARPipeline
-{
+class ARPipeline {
 public:
-  ARPipeline(const cv::Mat& patternImage, const CameraCalibration& calibration);
+    ARPipeline( const cv::Mat& mainPattern, const cv::Mat& frontPattern,
+            const cv::Mat& rightPattern, const cv::Mat& leftPattern,
+            const CameraCalibration& calibration);
+    ARPipeline(const cv::Mat& patternImage, const CameraCalibration& calibration);
 
-  bool processFrame(const cv::Mat& inputFrame);
+    bool processFrame(cv::Mat& inputFrame);
 
-  const Transformation& getPatternLocation() const;
+    const Transformation& getPatternLocation() const;
 
-  PatternDetector     m_patternDetector;
+    PatternDetector m_patternDetector;
+    
+    cv::Point3f computeLightDirection();
+    cv::Scalar computeLightColor( cv::Mat& org, cv::Mat& rec );
+    cv::Scalar computeAmbientLight( cv::Mat& org, cv::Mat& rec );
+    
+    cv::Scalar currentDiffuseColor;
+    cv::Scalar currentAmbientLight;
+
 private:
-
-private:
-  CameraCalibration   m_calibration;
-  Pattern             m_pattern;
-  PatternTrackingInfo m_patternInfo;
-  //PatternDetector     m_patternDetector;
+    CameraCalibration m_calibration;
+    Pattern m_mainPattern;
+    Pattern m_frontPattern;
+    Pattern m_rightPattern;
+    Pattern m_leftPattern;
+    PatternTrackingInfo m_patternInfo;
+    
+    bool left( cv::Point2f, cv::Point2f, cv::Point2f );
+    
+    bool isLeftVisible;
+    bool isRightVisible;
+    bool isFrontVisible;
+    
+    cv::Mat sFront, sRight, sLeft, sMain;
+    
+    float small_rate;
+    
+    cv::Mat m_frontHomography, m_rightHomography, m_leftHomography, m_mainHomography;
+    cv::Mat m_rectifiedFront, m_rectifiedRight, m_rectifiedLeft, m_rectifiedMain;
+    
+    //PatternDetector     m_patternDetector;
 };
 
 #endif

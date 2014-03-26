@@ -22,48 +22,51 @@
 using namespace glm;
 using namespace std;
 
-namespace rendering
-{
+namespace rendering {
 
-	class Sprite : public RenderableObject
-	{
-		public:
+    class Sprite : public RenderableObject {
+    public:
+        
+        Sprite( BaseShader& _shader );
+        Sprite(const char* _img_path, BaseShader& _shader);
+        ~Sprite();
 
-			Sprite( const char* _img_path, BaseShader& _shader );
-			~Sprite();
+        virtual void draw(BaseCamera& _camera);
+        virtual void drawShadowMap(glm::vec3);
 
-			virtual void draw( BaseCamera& _camera );
-			void updateTextureData( cv::Mat& _tex );
+        void updateTextureData(cv::Mat& _tex);
+        void assignBufferTexToData( GLuint textureLoc );
 
-		private:
+    private:
 
-			void initGeometry();
+        void initGeometry();
+        void initDataFromImagePath( const char* );
 
-			vector<vec2> vertices;
-			vector<vec2> uvs;
+        vector<vec2> vertices;
+        vector<vec2> uvs;
 
-			void* imageData;
-			int imageWidth;
-			int imageHeight;
+        void* imageData;
+        int imageWidth;
+        int imageHeight;
 
-			GLint vertexAttribute;
-			GLint uvAttribute;
+        GLint vertexAttribute;
+        GLint uvAttribute;
 
-			mat4 modelMatrix;
+        mat4 modelMatrix;
 
-			GLuint vertexBuffer;
-			GLuint texCoordBuffer;
-			GLuint vaoIdx;
+        GLuint vertexBuffer;
+        GLuint texCoordBuffer;
+        GLuint vaoIdx;
 
-			GLuint texId;
+        GLuint texId;
 
-			GLuint projectionMatLoc;
-			GLuint viewMatLoc;
-			GLuint modelMatLoc;
-			GLuint texLoc;
+        GLuint projectionMatLoc;
+        GLuint viewMatLoc;
+        GLuint modelMatLoc;
+        GLuint texLoc;
 
-			GLuint programId;
-	};
+        GLuint programId;
+    };
 
 }
 

@@ -18,17 +18,17 @@ cd ..
 #-------------------------------------------------------------------------------
 #RENDERING LIBRARY CREATION
 #-------------------------------------------------------------------------------
-cd rendering
-make
+#cd rendering
+#make
 
-if [ "$?" = "0" ]; then
-	echo "\n\t***INFO: Rendering library successfully created at ./lib/librendering.a\n"
-else
-	echo "\n\tERROR: Creating rendering library\n"
-fi
+#if [ "$?" = "0" ]; then
+#	echo "\n\t***INFO: Rendering library successfully created at ./lib/librendering.a\n"
+#else
+#	echo "\n\tERROR: Creating rendering library\n"
+#fi
 
-make clean
-cd ..
+#make clean
+#cd ..
 
 #-------------------------------------------------------------------------------
 #TRACKING & RENDERING TEST PROGRAM CREATION

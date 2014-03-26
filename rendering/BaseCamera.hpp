@@ -15,58 +15,55 @@
 
 using namespace glm;
 
-namespace rendering
-{
+namespace rendering {
 
-	class BaseCamera
-	{
-		
-		public:
-			BaseCamera();
+    class BaseCamera {
+    public:
+        BaseCamera();
 
-			mat4 getViewMatrix();
-			mat4 getProjectionMatrix();
-			mat4 getViewProjectionMatrix();
+        mat4 getViewMatrix();
+        mat4 getProjectionMatrix();
+        mat4 getViewProjectionMatrix();
 
-			void setCustomViewMatrix( mat4 _view );
+        void setCustomViewMatrix(mat4 _view);
 
-			void setProjectionMatrix( mat4 _proj );
+        void setProjectionMatrix(mat4 _proj);
 
-			void setPerspectiveProjection(
-				float _fovy = 45.0f,
-				float _aspect = 4/3.0f,
-				float _zNear = 0.01f,
-				float _zFar = 300.0f
-			);
+        void setPerspectiveProjection(
+                float _fovy = 45.0f,
+                float _aspect = 4 / 3.0f,
+                float _zNear = 0.01f,
+                float _zFar = 300.0f
+                );
 
-			void setOrthogonalProjection(
-				float _left = 0.0f,
-				float _right = 400.0f,
-				float _up = 0.0,
-				float _down = 300.0f,
-				float _zNear = 0.01f,
-				float _zFar = 300.0f
-			);
+        void setOrthogonalProjection(
+                float _left = 0.0f,
+                float _right = 400.0f,
+                float _up = 0.0,
+                float _down = 300.0f,
+                float _zNear = 0.01f,
+                float _zFar = 300.0f
+                );
 
-			void rotate( float angle, vec3 axis);
-			void translate( vec3 _trans);
-			void goFront( float _step );
-			void goBack( float _step );
+        void rotate(float angle, vec3 axis);
+        void translate(vec3 _trans);
+        void goFront(float _step);
+        void goBack(float _step);
 
-			bool usingCustomViewMatrix;
-			bool usingCustomProjectionMatrix;
+        bool usingCustomViewMatrix;
+        bool usingCustomProjectionMatrix;
 
-			mat4 projectionMatrix;
+        mat4 projectionMatrix;
 
-		protected:
+    protected:
 
-			// mat4 viewMatrix;
-			mat4 viewMatrix;
+        // mat4 viewMatrix;
+        mat4 viewMatrix;
 
-			vec3 position;
-			vec3 up;
-			vec3 lookAtDir;
-};
+        vec3 position;
+        vec3 up;
+        vec3 lookAtDir;
+    };
 
 }
 

@@ -23,7 +23,7 @@ namespace rendering
 		glutInit( &argc, argv );
         glutInitDisplayMode( GLUT_RGBA | GLUT_ALPHA | GLUT_DOUBLE | GLUT_DEPTH );
         
-        glutInitContextVersion(3, 3);
+        glutInitContextVersion(4, 0);
         glutInitWindowPosition(0, 0);
         glutInitWindowSize(this->width, this->height);
 

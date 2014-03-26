@@ -26,12 +26,13 @@ public:
      * Initialize a pattern detector with specified feature detector, descriptor extraction and matching algorithm
      */
     PatternDetector
-        (
-        cv::Ptr<cv::FeatureDetector>     detector  = new cv::ORB(1000), 
-        cv::Ptr<cv::DescriptorExtractor> extractor = new cv::ORB(), 
-        cv::Ptr<cv::DescriptorMatcher>   matcher   = new cv::BFMatcher(cv::NORM_HAMMING, true),
-        bool enableRatioTest                       = false
-        );
+    (
+            cv::Ptr<cv::FeatureDetector> detector = new cv::ORB(1000),
+            cv::Ptr<cv::DescriptorExtractor> extractor = new cv::ORB(),
+            cv::Ptr<cv::DescriptorMatcher> matcher = new cv::BFMatcher(cv::NORM_HAMMING, true),
+            cv::Point3f size = cv::Point3f(0, 0, 0),
+            bool enableRatioTest = false
+    );
 
     /**
     * 
@@ -42,7 +43,11 @@ public:
     * Initialize Pattern structure from the input image.
     * This function finds the feature points and extract descriptors for them.
     */
-    void buildPatternFromImage(const cv::Mat& image, Pattern& pattern) const;
+    void buildMainPatternFromImage(const cv::Mat& image, Pattern& pattern) const;
+    void buildRotatedPattern( const cv::Mat& image, Pattern& pattern, cv::Point3f& rotation ) const;
+    void buildFrontPatternFromImage(const cv::Mat& image, Pattern& pattern) const;
+    void buildRightPatternFromImage(const cv::Mat& image, Pattern& pattern) const;
+    void buildLeftPatternFromImage(const cv::Mat& image, Pattern& pattern) const;
 
     /**
     * Tries to find a @pattern object on given @image. 
@@ -53,6 +58,8 @@ public:
     bool enableRatioTest;
     bool enableHomographyRefinement;
     float homographyReprojectionThreshold;
+    
+    cv::Point3f m_cubeSize;
 
 protected:
 
@@ -76,7 +83,7 @@ protected:
         float reprojectionThreshold,
         std::vector<cv::DMatch>& matches, 
         cv::Mat& homography);
-
+    
 private:
     std::vector<cv::KeyPoint> m_queryKeypoints;
     cv::Mat                   m_queryDescriptors;
@@ -88,10 +95,12 @@ private:
     cv::Mat                   m_roughHomography;
     cv::Mat                   m_refinedHomography;
 
-    Pattern                          m_pattern;
+    Pattern                          m_mainPattern;
     cv::Ptr<cv::FeatureDetector>     m_detector;
     cv::Ptr<cv::DescriptorExtractor> m_extractor;
     cv::Ptr<cv::DescriptorMatcher>   m_matcher;
+    
+    cv::Point3f m_cubMidSize;
 };
 
 #endif

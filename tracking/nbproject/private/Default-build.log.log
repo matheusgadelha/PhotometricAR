@@ -1,0 +1,33 @@
+g++ ARDrawingContext.cpp -c -Wall -msse4.2 -O3 -lGL -lGLEW -lglut -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video -I/usr/local/include/opencv2 -I/usr/local/include -I../glm
+g++ Pattern.cpp -c -Wall -msse4.2 -O3 -lGL -lGLEW -lglut -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video -I/usr/local/include/opencv2 -I/usr/local/include -I../glm
+g++ ARPipeline.cpp -c -Wall -msse4.2 -O3 -lGL -lGLEW -lglut -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video -I/usr/local/include/opencv2 -I/usr/local/include -I../glm
+g++ PatternDetector.cpp -c -Wall -msse4.2 -O3 -lGL -lGLEW -lglut -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video -I/usr/local/include/opencv2 -I/usr/local/include -I../glm
+In file included from PatternDetector.cpp:15:0:
+DebugHelpers.hpp: In function ‘cv::Mat cv::getMatchesImage(cv::Mat, cv::Mat, const std::vector<cv::KeyPoint>&, const std::vector<cv::KeyPoint>&, std::vector<cv::DMatch>, int)’:
+DebugHelpers.hpp:42:30: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+PatternDetector.hpp: In constructor ‘PatternDetector::PatternDetector(cv::Ptr<cv::FeatureDetector>, cv::Ptr<cv::DescriptorExtractor>, cv::Ptr<cv::DescriptorMatcher>, bool)’:
+PatternDetector.hpp:94:38: warning: ‘PatternDetector::m_matcher’ will be initialized after [-Wreorder]
+PatternDetector.hpp:53:10: warning:   ‘bool PatternDetector::enableRatioTest’ [-Wreorder]
+PatternDetector.cpp:25:1: warning:   when initialized here [-Wreorder]
+PatternDetector.cpp: In member function ‘void PatternDetector::buildPatternFromImage(const cv::Mat&, Pattern&) const’:
+PatternDetector.cpp:58:9: warning: unused variable ‘numImages’ [-Wunused-variable]
+PatternDetector.cpp:59:11: warning: unused variable ‘step’ [-Wunused-variable]
+PatternDetector.cpp: In static member function ‘static bool PatternDetector::refineMatchesWithHomography(const std::vector<cv::KeyPoint>&, const std::vector<cv::KeyPoint>&, float, std::vector<cv::DMatch>&, cv::Mat&)’:
+PatternDetector.cpp:263:26: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+PatternDetector.cpp:292:29: warning: comparison between signed and unsigned integer expressions [-Wsign-compare]
+g++ GeometryTypes.cpp -c -Wall -msse4.2 -O3 -lGL -lGLEW -lglut -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video -I/usr/local/include/opencv2 -I/usr/local/include -I../glm
+GeometryTypes.cpp: In static member function ‘static Vector3 Vector3::zero()’:
+GeometryTypes.cpp:81:23: warning: missing braces around initializer for ‘float [3]’ [-Wmissing-braces]
+GeometryTypes.cpp: In member function ‘Vector3 Vector3::operator-() const’:
+GeometryTypes.cpp:87:44: warning: missing braces around initializer for ‘float [3]’ [-Wmissing-braces]
+g++ CameraCalibration.cpp -c -Wall -msse4.2 -O3 -lGL -lGLEW -lglut -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video -I/usr/local/include/opencv2 -I/usr/local/include -I../glm
+ar rvs libtrack.a ARDrawingContext.o Pattern.o ARPipeline.o PatternDetector.o GeometryTypes.o CameraCalibration.o
+ar: creating libtrack.a
+a - ARDrawingContext.o
+a - Pattern.o
+a - ARPipeline.o
+a - PatternDetector.o
+a - GeometryTypes.o
+a - CameraCalibration.o
+ranlib libtrack.a
+mv libtrack.a ../lib/

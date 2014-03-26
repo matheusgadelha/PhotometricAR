@@ -1,0 +1,23 @@
+g++ RenderingWindow.cpp -c -Wall -msse4.2 -O3 -ggdb -lGL -lGLEW -lglut -I../glm
+g++ BaseShader.cpp -c -Wall -msse4.2 -O3 -ggdb -lGL -lGLEW -lglut -I../glm
+BaseShader.cpp: In member function ‘char* rendering::BaseShader::readFile(const char*)’:
+BaseShader.cpp:68:43: warning: ignoring return value of ‘size_t fread(void*, size_t, size_t, FILE*)’, declared with attribute warn_unused_result [-Wunused-result]
+g++ Mesh.cpp -c -Wall -msse4.2 -O3 -ggdb -lGL -lGLEW -lglut -I../glm
+Mesh.cpp: In member function ‘bool rendering::Mesh::loadOBJ(const char*, std::vector<glm::detail::tvec3<float> >&, std::vector<glm::detail::tvec2<float> >&, std::vector<glm::detail::tvec3<float> >&)’:
+Mesh.cpp:220:11: warning: unused variable ‘trash’ [-Wunused-variable]
+Mesh.cpp:163:8: warning: variable ‘err’ set but not used [-Wunused-but-set-variable]
+g++ BaseCamera.cpp -c -Wall -msse4.2 -O3 -ggdb -lGL -lGLEW -lglut -I../glm
+g++ RenderableObject.cpp -c -Wall -msse4.2 -O3 -ggdb -lGL -lGLEW -lglut -I../glm
+g++ RenderingManager.cpp -c -Wall -msse4.2 -O3 -ggdb -lGL -lGLEW -lglut -I../glm
+g++ Sprite.cpp -c -Wall -msse4.2 -O3 -ggdb -lGL -lGLEW -lglut -I../glm -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_objdetect -lopencv_video -I/usr/local/include/opencv2 -I/usr/local/include
+ar rvs librender.a RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o RenderableObject.o RenderingManager.o Sprite.o
+ar: creating librender.a
+a - RenderingWindow.o
+a - BaseShader.o
+a - Mesh.o
+a - BaseCamera.o
+a - RenderableObject.o
+a - RenderingManager.o
+a - Sprite.o
+ranlib librender.a
+mv librender.a ../lib/

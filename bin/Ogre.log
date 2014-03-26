@@ -1,0 +1,59 @@
+22:48:32: Creating resource group General
+22:48:32: Creating resource group Internal
+22:48:32: Creating resource group Autodetect
+22:48:32: SceneManagerFactory for type 'DefaultSceneManager' registered.
+22:48:32: Registering ResourceManager for type Material
+22:48:32: Registering ResourceManager for type Mesh
+22:48:32: Registering ResourceManager for type Skeleton
+22:48:32: MovableObjectFactory for type 'ParticleSystem' registered.
+22:48:32: ArchiveFactory for archive type FileSystem registered.
+22:48:32: ArchiveFactory for archive type Zip registered.
+22:48:32: ArchiveFactory for archive type EmbeddedZip registered.
+22:48:32: DDS codec registering
+22:48:32: FreeImage version: 3.15.1
+22:48:32: This program uses FreeImage, a free, open source image library supporting all common bitmap formats. See http://freeimage.sourceforge.net for details
+22:48:32: Supported formats: bmp,ico,jpg,jif,jpeg,jpe,jng,koa,iff,lbm,mng,pbm,pbm,pcd,pcx,pgm,pgm,png,ppm,ppm,ras,tga,targa,tif,tiff,wap,wbmp,wbm,psd,cut,xbm,xpm,gif,hdr,g3,sgi,exr,j2k,j2c,jp2,pfm,pct,pict,pic,3fr,arw,bay,bmq,cap,cine,cr2,crw,cs1,dc2,dcr,drf,dsc,dng,erf,fff,ia,iiq,k25,kc2,kdc,mdc,mef,mos,mrw,nef,nrw,orf,pef,ptx,pxn,qtk,raf,raw,rdc,rw2,rwl,rwz,sr2,srf,sti
+22:48:32: Registering ResourceManager for type HighLevelGpuProgram
+22:48:32: Registering ResourceManager for type Compositor
+22:48:32: MovableObjectFactory for type 'Entity' registered.
+22:48:32: MovableObjectFactory for type 'Light' registered.
+22:48:32: MovableObjectFactory for type 'BillboardSet' registered.
+22:48:32: MovableObjectFactory for type 'ManualObject' registered.
+22:48:32: MovableObjectFactory for type 'BillboardChain' registered.
+22:48:32: MovableObjectFactory for type 'RibbonTrail' registered.
+22:48:32: OGRE EXCEPTION(6:FileNotFoundException): 'plugins.cfg' file not found! in ConfigFile::load at /home/matheus/ogre/OgreMain/src/OgreConfigFile.cpp (line 88)
+22:48:32: plugins.cfg not found, automatic plugin loading disabled.
+22:48:32: *-*-* OGRE Initialising
+22:48:32: *-*-* Version 1.10.0unstable (Xalafu)
+22:48:32: Creating resource group Essential
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/thumbnails' of type 'FileSystem' to resource group 'Essential'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/packs/SdkTrays.zip' of type 'Zip' to resource group 'Essential'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/packs/profiler.zip' of type 'Zip' to resource group 'Essential'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media' of type 'FileSystem' to resource group 'General'
+22:48:32: Creating resource group Popular
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/fonts' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/materials/programs' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/materials/scripts' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/materials/textures' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/materials/textures/nvidia' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/models' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/particle' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/DeferredShadingMedia' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/PCZAppMedia' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/RTShaderLib' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/RTShaderLib/materials' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/materials/scripts/SSAO' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/materials/textures/SSAO' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/volumeTerrain' of type 'FileSystem' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/packs/cubemap.zip' of type 'Zip' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/packs/cubemapsJS.zip' of type 'Zip' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/packs/dragon.zip' of type 'Zip' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/packs/fresneldemo.zip' of type 'Zip' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/packs/ogretestmap.zip' of type 'Zip' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/packs/ogredance.zip' of type 'Zip' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/packs/Sinbad.zip' of type 'Zip' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/packs/skybox.zip' of type 'Zip' to resource group 'Popular'
+22:48:32: Added resource location '/home/matheus/ogre/Samples/Media/volumeTerrain/volumeTerrainBig.zip' of type 'Zip' to resource group 'Popular'
+22:48:32: Creating resource group Tests
+22:48:32: Added resource location '/home/matheus/ogre/Tests/Media' of type 'FileSystem' to resource group 'Tests'
+22:48:32: OGRE EXCEPTION(6:FileNotFoundException): 'ogre.cfg' file not found! in ConfigFile::load at /home/matheus/ogre/OgreMain/src/OgreConfigFile.cpp (line 88)

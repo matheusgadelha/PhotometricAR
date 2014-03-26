@@ -15,8 +15,6 @@
 
 void PatternTrackingInfo::computePose(const Pattern& pattern, const CameraCalibration& calibration)
 {
-  cv::Mat Rvec;
-  cv::Mat_<float> Tvec;
   cv::Mat raux,taux;
 
   cv::solvePnP(pattern.points3d, points2d, calibration.getIntrinsic(), calibration.getDistorsion(),raux,taux);

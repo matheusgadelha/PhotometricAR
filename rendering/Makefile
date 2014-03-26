@@ -1,6 +1,6 @@
 CC = g++
 
-CFLAGS = -Wall -msse4.2 -O3 -ggdb
+CFLAGS = -Wall -msse4.2 -ggdb
 
 OPENGL_LS = -lGL -lGLEW -lglut
 
@@ -14,8 +14,8 @@ OPENCV_SO = /usr/local/lib/libopencv_calib3d.so /usr/local/lib/libopencv_contrib
 
 OPENCV = $(OPENCV_LS) $(OPENCV_INCLUDES)
 
-all: RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o  RenderableObject.o RenderingManager.o Sprite.o
-	ar rvs librender.a RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o RenderableObject.o RenderingManager.o Sprite.o
+all: RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o  RenderableObject.o RenderingManager.o Sprite.o MarkerMesh.o
+	ar rvs librender.a RenderingWindow.o BaseShader.o Mesh.o BaseCamera.o RenderableObject.o RenderingManager.o Sprite.o MarkerMesh.o
 	ranlib librender.a
 	mv librender.a ../lib/
 
@@ -33,6 +33,9 @@ RenderingWindow.o: RenderingWindow.cpp
 
 Mesh.o: Mesh.cpp
 	$(CC) Mesh.cpp -c $(CFLAGS) $(OPENGL_LS) $(INC_DIR_GLM)
+	
+MarkerMesh.o: MarkerMesh.cpp
+	$(CC) MarkerMesh.cpp -c $(CFLAGS) $(OPENGL_LS) $(INC_DIR_GLM)
 
 BaseShader.o: BaseShader.cpp
 	$(CC) BaseShader.cpp -c $(CFLAGS) $(OPENGL_LS) $(INC_DIR_GLM)

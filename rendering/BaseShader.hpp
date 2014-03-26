@@ -7,29 +7,26 @@
 
 #include "glm.hpp"
 
-namespace rendering
-{
+namespace rendering {
 
-	class BaseShader
-	{
+    class BaseShader {
+    public:
+        BaseShader();
+        BaseShader(const char* _vert_filename, const char* _frag_filename);
+        ~BaseShader();
 
-		public:
-			BaseShader();
-			BaseShader( const char* _vert_filename, const char* _frag_filename );
-			~BaseShader();
+        GLuint vertexShaderId;
+        GLuint fragmentShaderId;
+        GLuint programId;
 
-			GLuint vertexShaderId;
-			GLuint fragmentShaderId;
-			GLuint programId;
+        void createCompleteShader(const char* _vert_filename, const char* _frag_filename);
 
-			void createCompleteShader( const char* _vert_filename, const char* _frag_filename);
+    private:
 
-		private:
-
-			char* readFile( const char* _filename );
-			void printCompilationError( GLuint _obj );
-			GLuint createGeneralShader( const char* _filename, GLenum _type );
-	};
+        char* readFile(const char* _filename);
+        void printCompilationError(GLuint _obj);
+        GLuint createGeneralShader(const char* _filename, GLenum _type);
+    };
 
 }
 
