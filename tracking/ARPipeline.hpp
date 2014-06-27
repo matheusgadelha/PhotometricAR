@@ -22,7 +22,7 @@ public:
     
     cv::Point3f computeLightDirection();
     cv::Scalar computeLightColor( cv::Mat& org, cv::Mat& rec );
-    cv::Scalar computeAmbientLight( cv::Mat& org, cv::Mat& rec );
+    cv::Scalar computeLight( cv::Mat& org, cv::Mat& rec );
     
     cv::Scalar currentDiffuseColor;
     cv::Scalar currentAmbientLight;

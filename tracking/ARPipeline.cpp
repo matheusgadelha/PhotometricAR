@@ -131,7 +131,7 @@ bool ARPipeline::processFrame(cv::Mat& inputFrame)
     }
     
     currentDiffuseColor = computeLightColor(sMain,rectifiedMain);
-    currentAmbientLight = computeAmbientLight(sMain,rectifiedMain);
+    currentAmbientLight = computeLight(sMain,rectifiedMain);
     
 //    std::cout << "Visibility List\n";
 //    if( isFrontVisible ) std::cout <<"FRONT\n";
@@ -148,24 +148,32 @@ cv::Scalar ARPipeline::computeLightColor(cv::Mat& org, cv::Mat& rec)
 {
     cv::Scalar color;
     
-    cv::Mat f_rec, f_org;
+    cv::Mat f_rec, f_org, diff_mask, gray_diff;
     cv::Mat div;
 
 	cv::Mat diff = rec - org;
+	cv::cvtColor(diff, gray_diff, CV_BGR2GRAY );
 
 	cv::imshow("Diff", diff);
+
+	cv::threshold( gray_diff, diff_mask, 30, 255, cv::THRESH_BINARY_INV );
+	cv::erode( diff_mask, diff_mask, cv::Mat() );
+	cv::erode( diff_mask, diff_mask, cv::Mat() );
+	cv::dilate( diff_mask, diff_mask, cv::Mat() );
+	cv::dilate( diff_mask, diff_mask, cv::Mat() );
+	cv::imshow("Diff Mask", diff_mask);
         
     rec.convertTo(f_rec,CV_32FC3);
     org.convertTo(f_org, CV_32FC3);
       
     div = f_rec / f_org;
        
-    color = cv::mean(div);
+    color = cv::mean(div,diff_mask);
         
     return color;
 }
 
-cv::Scalar ARPipeline::computeAmbientLight(cv::Mat& org, cv::Mat& rec)
+cv::Scalar ARPipeline::computeLight(cv::Mat& org, cv::Mat& rec)
 {
     cv::Scalar org_mean, rec_mean;
     
@@ -183,7 +191,7 @@ cv::Scalar ARPipeline::computeAmbientLight(cv::Mat& org, cv::Mat& rec)
 
 cv::Point3f ARPipeline::computeLightDirection()
 {
-    
+    return cv::Point3f(0,0,0);
 }
 
 bool ARPipeline::left(cv::Point2f a, cv::Point2f b, cv::Point2f c)
