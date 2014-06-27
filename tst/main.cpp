@@ -86,6 +86,13 @@ public:
         manager = new RenderingManager(camera, vec2(FRAME_WIDTH,FRAME_HEIGHT), vec2(1024,1024));
         manager->renderWithShadows( true );
 
+        if(argc < 5)
+        {
+            std::cout << "Error. More images needed.\n"
+					  << "Usage: ./program mainPattern frontPattern rightPattern leftPattern\n";
+			std::exit( -1 );
+        }
+
         shader.createCompleteShader("shaders/simple.vert", "shaders/simple.frag");
         spriteShader.createCompleteShader("shaders/Sprite.vert", "shaders/Sprite.frag");
         shadowMapShader.createCompleteShader("shaders/shadowMap.vert", "shaders/shadowMap.frag" );
@@ -104,10 +111,6 @@ public:
         manager->add(*sprite);
         manager->add(model);
         
-        if(argc < 5)
-        {
-            std::cout << "Error. More images needed.\n";
-        }
         
         patternImg = cv::imread(argv[1]);
         

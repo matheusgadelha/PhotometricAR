@@ -76,7 +76,7 @@ bool ARPipeline::processFrame(cv::Mat& inputFrame)
     cv::resize( rectifiedMain, rectifiedMain, cv::Size(0,0), small_rate, small_rate );
 //    cv::imshow("RECTIFIED MAIN", rectifiedMain);
     cv::waitKey(12);
-    m_patternInfo.draw2dContour( inputFrame, cv::Scalar(255,0,0) );
+    //m_patternInfo.draw2dContour( inputFrame, cv::Scalar(255,0,0) );
     
     //=========FRONT FACE==========//
     cv::projectPoints( m_frontPattern.points3d, m_patternInfo.Rvec, m_patternInfo.Tvec,
@@ -92,7 +92,7 @@ bool ARPipeline::processFrame(cv::Mat& inputFrame)
         cv::resize( rectifiedFront, rectifiedFront, cv::Size(0,0), small_rate, small_rate );
 //        cv::imshow("RECTIFIED FRONT", rectifiedFront);
         cv::waitKey(12);
-        m_patternInfo.draw2dContour( inputFrame, cv::Scalar(255,0,0) );
+        // m_patternInfo.draw2dContour( inputFrame, cv::Scalar(255,0,0) );
     }
     
     //=========RIGHT FACE==========//
@@ -109,7 +109,7 @@ bool ARPipeline::processFrame(cv::Mat& inputFrame)
         cv::resize( rectifiedRight, rectifiedRight, cv::Size(0,0), small_rate, small_rate );
 //        cv::imshow("RECTIFIED RIGHT", rectifiedRight);
         cv::waitKey(12);
-        m_patternInfo.draw2dContour( inputFrame, cv::Scalar(255,0,0) );    
+        // m_patternInfo.draw2dContour( inputFrame, cv::Scalar(255,0,0) );    
     }
     
     
@@ -127,7 +127,7 @@ bool ARPipeline::processFrame(cv::Mat& inputFrame)
         cv::resize( rectifiedLeft, rectifiedLeft, cv::Size(0,0), small_rate, small_rate );
 //        cv::imshow("RECTIFIED LEFT", rectifiedLeft);
         cv::waitKey(12);
-        m_patternInfo.draw2dContour( inputFrame, cv::Scalar(255,0,0) );
+        // m_patternInfo.draw2dContour( inputFrame, cv::Scalar(255,0,0) );
     }
     
     currentDiffuseColor = computeLightColor(sMain,rectifiedMain);
@@ -150,6 +150,10 @@ cv::Scalar ARPipeline::computeLightColor(cv::Mat& org, cv::Mat& rec)
     
     cv::Mat f_rec, f_org;
     cv::Mat div;
+
+	cv::Mat diff = rec - org;
+
+	cv::imshow("Diff", diff);
         
     rec.convertTo(f_rec,CV_32FC3);
     org.convertTo(f_org, CV_32FC3);
@@ -171,7 +175,7 @@ cv::Scalar ARPipeline::computeAmbientLight(cv::Mat& org, cv::Mat& rec)
     cv::Scalar color = 
             cv::Scalar(rec_mean[2]/org_mean[2],rec_mean[1]/org_mean[1],rec_mean[0]/org_mean[0]);
     
-    std::cout << color[2] << " " << color[1] << " " << color[0] << std::endl;
+    //std::cout << color[2] << " " << color[1] << " " << color[0] << std::endl;
     
     return color;
 }

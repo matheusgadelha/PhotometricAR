@@ -42,6 +42,7 @@ void main()
 
     vec4 environmentComponent = vec4( a_intensity * ambientLight,1.0f );
     vec4 diffuseComponent = vec4( d_intensity * LightColor * max(dot(-LightDirection,OutNormal),0), 1.0f);
+    // vec4 diffuseComponent = vec4( d_intensity * vec3(0.9,0.5,0.5) * max(dot(-LightDirection,OutNormal),0), 1.0f);
     vec4 specularComponent = vec4( s_intensity * LightColor * pow(max(dot(reflected,eye),0), shininess), 1.0f);
 
 //    FragColor =	vec4(LightColor,1.0f);
@@ -49,4 +50,8 @@ void main()
                 vec4(OutVisibility*environmentComponent.xyz,1.0f) +
                 0.2*environmentComponent + 
                 shadow_visibility*specularComponent);
+// FragColor = mColor*(1.0 * diffuseComponent + 
+//                 vec4(OutVisibility*environmentComponent.xyz,1.0f) +
+//                 0.5*environmentComponent + 
+//                 shadow_visibility*specularComponent);
 }

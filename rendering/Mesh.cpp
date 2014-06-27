@@ -112,7 +112,7 @@ namespace rendering {
 
         glUniform3f(this->lightDirectionLoc, lightDirection.x, lightDirection.y, lightDirection.z);
         glUniform3f(this->lightColorLoc, lightColor.x, lightColor.y, lightColor.z);
-        std::cout << "MESH: " << ambientLight.x << " " << ambientLight.y << " " << ambientLight.z << std::endl;
+        //std::cout << "MESH: " << ambientLight.x << " " << ambientLight.y << " " << ambientLight.z << std::endl;
         glUniform3f(this->ambientLightLoc, ambientLight.x, ambientLight.y, ambientLight.z);
 
         glActiveTexture(GL_TEXTURE1);
@@ -326,7 +326,7 @@ namespace rendering {
         
         for( unsigned v=0; v < vertices.size(); ++v )
         {
-            std::cout << "Vertex " << v << std::endl;
+            //std::cout << "Vertex " << v << std::endl;
             intersectedRays = 0;
             for( unsigned r = 0; r < numRays; ++r )
             {
