@@ -37,6 +37,10 @@ namespace rendering {
         
         GLuint shadowBufferName;
         GLuint depthTexture;
+
+        GLuint SSAOBufferName;
+        GLuint SSAOTexture;
+
         DirectionalLightInfo light;
 
     private:

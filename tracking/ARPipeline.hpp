@@ -7,6 +7,26 @@
 #include "CameraCalibration.hpp"
 #include "GeometryTypes.hpp"
 
+#include <algorithm>
+#include <cmath>
+
+struct LightFactor
+{
+	cv::Scalar color;
+	float mean;
+
+	LightFactor( cv::Scalar _color, float _mean)
+	{
+		this->color = _color;
+		this->mean = _mean;
+	}
+
+	bool operator < ( const LightFactor l) const
+	{
+		return this->mean < l.mean;
+	}
+};
+
 class ARPipeline {
 public:
     ARPipeline( const cv::Mat& mainPattern, const cv::Mat& frontPattern,
@@ -23,6 +43,8 @@ public:
     cv::Point3f computeLightDirection();
     cv::Scalar computeLightColor( cv::Mat& org, cv::Mat& rec );
     cv::Scalar computeLight( cv::Mat& org, cv::Mat& rec );
+
+	void divergenceMask( cv::Mat& org, cv::Mat& rec, cv::Mat& result );
     
     cv::Scalar currentDiffuseColor;
     cv::Scalar currentAmbientLight;
@@ -34,6 +56,11 @@ private:
     Pattern m_rightPattern;
     Pattern m_leftPattern;
     PatternTrackingInfo m_patternInfo;
+
+	cv::Scalar mainLightFactor;
+	cv::Scalar frontLightFactor;
+	cv::Scalar rightLightFactor;
+	cv::Scalar leftLightFactor;
     
     bool left( cv::Point2f, cv::Point2f, cv::Point2f );
     

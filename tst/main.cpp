@@ -48,6 +48,8 @@ public:
     BaseCamera camera;
     cv::VideoCapture * capture;
     cv::Mat currentFrame;
+	bool loadFromImage;
+	cv::Mat procFrame;
     
     cv::Mat patternImg;
     cv::Mat frontPatternImg;
@@ -86,6 +88,16 @@ public:
         manager = new RenderingManager(camera, vec2(FRAME_WIDTH,FRAME_HEIGHT), vec2(1024,1024));
         manager->renderWithShadows( true );
 
+		if( argc == 6 )
+		{
+			this->loadFromImage = true;
+			procFrame = cv::imread(argv[5]);
+		}
+		else
+		{
+			this->loadFromImage = false;
+		}
+
         if(argc < 5)
         {
             std::cout << "Error. More images needed.\n"
@@ -98,11 +110,12 @@ public:
         shadowMapShader.createCompleteShader("shaders/shadowMap.vert", "shaders/shadowMap.frag" );
         markerShader.createCompleteShader("shaders/markerShader.vert", "shaders/markerShader.frag" );
 
-        capture = new cv::VideoCapture(0);
+        capture = new cv::VideoCapture("data/testVidBig.avi");
+        //capture = new cv::VideoCapture(0);
         buildProjectionMatrix();
         camera.setProjectionMatrix(projection);
         
-        sprite = new Sprite("data/emtec_cd.jpg", spriteShader);
+        sprite = new Sprite("data/test-001.png", spriteShader);
 
         model.load("models/dragon.obj", shader, shadowMapShader);
         model.castShadows = true;
@@ -110,7 +123,6 @@ public:
 
         manager->add(*sprite);
         manager->add(model);
-        
         
         patternImg = cv::imread(argv[1]);
         
@@ -152,10 +164,17 @@ public:
     // 
 
     virtual void idle() {
+		
+		if( this->loadFromImage )
+		{
+			currentFrame = this->procFrame;
+		}
+		else
+		{
+	        (*capture) >> currentFrame;
+		}
 
-        (*capture) >> currentFrame;
-
-//        std::cout << currentFrame.cols << " " << currentFrame.rows << std::endl;
+        //std::cout << currentFrame.cols << " " << currentFrame.rows << std::endl;
 
         if (!currentFrame.empty()) {
             bool isPatternFound = pipeline->processFrame(currentFrame);
@@ -166,6 +185,7 @@ public:
             }
 
             sprite->updateTextureData(currentFrame);
+
 //            sprite->assignBufferTexToData(manager->depthTexture);
             this->render();
         }
@@ -175,7 +195,23 @@ public:
 
         glClearColor(0.0, 0.0, 0.0, 1.0);
         // glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+       
+	   	cv::Point3f dirp = pipeline->computeLightDirection();
+	   	vec3 lightDir( dirp.x, dirp.y, dirp.z );
+		lightDir = glm::normalize(lightDir);
         
+		mat4 normalMat = glm::transpose(glm::inverse(camera.getViewMatrix() * model.modelMatrix));
+
+		vec4 lightDir4 = normalMat * vec4( lightDir, 1 );
+		lightDir.x = lightDir4.x;
+		lightDir.y = lightDir4.y;
+		lightDir.z = lightDir4.z;
+		lightDir = glm::normalize(lightDir);
+
+		std::cout << lightDir.x << " " << lightDir.y << " " << lightDir.z << std::endl;
+
+		manager->light.direction = glm::normalize(lightDir);
+		//manager->light.direction = vec3(0,0,-1);
         manager->render();
         
         vec3 calcColor( pipeline->currentDiffuseColor[2], 

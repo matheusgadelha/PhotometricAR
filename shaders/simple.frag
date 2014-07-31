@@ -14,7 +14,7 @@ out vec4 FragColor;
 
 vec3 eye = vec3(0);
 float shininess = 3.0f;
-vec4 mColor = vec4(0.6,0.5,0.4,1.0);
+vec4 mColor = vec4(1.0,1.0,1.0,1.0);
 float d_intensity = 0.2;
 float s_intensity = 0.2;
 float a_intensity = 0.2;
@@ -48,7 +48,7 @@ void main()
 //    FragColor =	vec4(LightColor,1.0f);
     FragColor =	mColor*(shadow_visibility * diffuseComponent + 
                 vec4(OutVisibility*environmentComponent.xyz,1.0f) +
-                0.2*environmentComponent + 
+                0.4*environmentComponent + 
                 shadow_visibility*specularComponent);
 // FragColor = mColor*(1.0 * diffuseComponent + 
 //                 vec4(OutVisibility*environmentComponent.xyz,1.0f) +

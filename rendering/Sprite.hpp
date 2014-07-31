@@ -48,6 +48,8 @@ namespace rendering {
         void* imageData;
         int imageWidth;
         int imageHeight;
+		int imageElemSize;
+		int imageElemStep;
 
         GLint vertexAttribute;
         GLint uvAttribute;
